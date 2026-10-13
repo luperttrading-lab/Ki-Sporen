@@ -24,7 +24,7 @@
 | Datei | Inhalt |
 |---|---|
 | `index.html` | Startseite mit Links und Info-Knöpfen zu allen Laboren |
-| `nachbau_1_loop_labor.html` | Video-Labor 1: genetischer Algorithmus mit Ziel (Start exakt wie im Video, Seed 44); Sinus-Layer an die digitalisierte rote Videokurve angepasst (A 0,126, P 245, Abweichung 0,013), logistisch umschaltbar |
+| `nachbau_1_loop_labor.html` | Video-Labor 1: Oberfläche wie im Video; Start exakt (numpy default_rng(44)), gezeigte Loops linspace(0,999,160), Kreisbild aus Screenshot gemessen; Sinus-Layer an die rote Videokurve angepasst (A 0,126, P 245, Abweichung 0,013), logistisch umschaltbar; Gegenproben darunter |
 | `nachbau_2_ohne_ziel.html` | Video-Labor 2: exakt rekonstruiert (numpy default_rng(20261013), Farbe U(0,05;0,95), Größe U(0,12;0,88), Streuung mit n−1, Rauschen erst Größe dann Farbe); 101 Zeitpunkte vorgerechnet eingebettet; Gegenproben live mit Theoriekurve und R² |
 | `nachbau_4_gedaechtnis.html` | Video-Labor 4: Oberfläche wie im Video, Parameter an Video angepasst (Seed 359: Gen 0 und 630 exakt; Mischrate Farbe 0,0258, Größe 0,15; ε 0,47); Gegenproben und Versuche A–F getrennt darunter |
 | `ausbreitungs_labor_sir.html` | eigene Erweiterung zum Artikel: SEIQ-Modell (Mean-Field) |
