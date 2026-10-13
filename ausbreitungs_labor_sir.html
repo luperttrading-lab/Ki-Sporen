@@ -52,9 +52,17 @@
   .pill{display:inline-block;font-size:11px;font-weight:700;color:var(--Q);
     border:1px solid #1d3b37;background:#0c1d1b;border-radius:999px;padding:2px 9px;vertical-align:middle;margin-left:8px}
   table{border-collapse:collapse;width:100%;font-size:13px;margin-top:4px}
-  td,th{overflow-wrap:anywhere;hyphens:auto;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  td,th{overflow-wrap:break-word;hyphens:auto;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
   th{color:var(--mut);font-weight:600}
   td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+  @media(max-width:600px){
+    table.rt,table.rt tbody,table.rt tr,table.rt td{display:block;width:100%}
+    table.rt tr:first-child{display:none}
+    table.rt tr{border-bottom:1px solid var(--line);padding:9px 0}
+    table.rt td{border:0;padding:2px 0}
+    table.rt td:first-child{font-weight:700;color:var(--tx);margin-bottom:2px}
+    table.rt td[data-label]:not(:first-child)::before{content:attr(data-label) ": ";color:var(--mut);font-weight:600}
+  }
 </style>
 </head>
 <body>
@@ -261,6 +269,11 @@ dQ/dt = <span class="c">+</span>γ·I <span class="c">−</span> ω·Q
   window.addEventListener('resize',update);
   update();
 })();
+</script>
+<script>
+document.querySelectorAll('table').forEach(t=>{const h=[...t.querySelectorAll('tr:first-child th')].map(x=>x.textContent.trim());
+  if(!h.length)return;t.classList.add('rt');
+  t.querySelectorAll('tr').forEach(r=>[...r.children].forEach((c,i)=>{if(c.tagName==='TD'&&h[i])c.dataset.label=h[i];}));});
 </script>
 </body>
 </html>

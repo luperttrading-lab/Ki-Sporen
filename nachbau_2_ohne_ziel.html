@@ -42,10 +42,18 @@
   .t-sicher{color:var(--ok);background:#0b2219;border:1px solid #14532d}
   .t-wahr{color:var(--warn);background:#251c08;border:1px solid #713f12}
   table{border-collapse:collapse;width:100%;font-size:13px}
-  td,th{overflow-wrap:anywhere;hyphens:auto;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  td,th{overflow-wrap:break-word;hyphens:auto;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
   th{color:var(--mut);font-weight:600}
   .note{color:var(--mut);font-size:13px;margin:12px 0 0}
   code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:#cdd9ea}
+  @media(max-width:600px){
+    table.rt,table.rt tbody,table.rt tr,table.rt td{display:block;width:100%}
+    table.rt tr:first-child{display:none}
+    table.rt tr{border-bottom:1px solid var(--line);padding:9px 0}
+    table.rt td{border:0;padding:2px 0}
+    table.rt td:first-child{font-weight:700;color:var(--tx);margin-bottom:2px}
+    table.rt td[data-label]:not(:first-child)::before{content:attr(data-label) ": ";color:var(--mut);font-weight:600}
+  }
 </style>
 </head>
 <body>
@@ -242,6 +250,11 @@ function simulateRing(opt){
   window.addEventListener('resize',render);
   sync();recompute();
 })();
+</script>
+<script>
+document.querySelectorAll('table').forEach(t=>{const h=[...t.querySelectorAll('tr:first-child th')].map(x=>x.textContent.trim());
+  if(!h.length)return;t.classList.add('rt');
+  t.querySelectorAll('tr').forEach(r=>[...r.children].forEach((c,i)=>{if(c.tagName==='TD'&&h[i])c.dataset.label=h[i];}));});
 </script>
 </body>
 </html>
