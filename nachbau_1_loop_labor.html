@@ -56,7 +56,9 @@
   <h1>1.000 parallele Loops — mit Ziel</h1>
   <p class="sub">Nachbau des „Loop-Labors“ aus dem Video, rekonstruiert aus Screenshots. Jeder Loop hat drei Zustände
   (Rot-Anteil, Blau-Anteil, Kreisgröße). Acht interne Layer ändern nur die Größe; der Konnektor wählt die
-  zielnächsten Loops aus, kombiniert sie neu und mutiert leicht. Ziel: Violett (50 % Rot, 50 % Blau), Größe 72 %.</p>
+  zielnächsten Loops aus, kombiniert sie neu und mutiert leicht. Ziel: Violett (50 % Rot, 50 % Blau), Größe 72 %.
+  Behauptung im Video (ca. 5:00): „Wenn ich vorher definiere, wie der Wert sein soll, würde sich ein solcher KI-Agent
+  egal was du tust auf einen Urzustand zurücksetzen.“</p>
 
   <div class="bar">
     <button class="primary" id="play">▶ Abspielen</button>
@@ -99,8 +101,9 @@
         Zustandsdefinition, Fehlermaß und „Vielfalt“ (mittlere Standardabweichung) sind damit bestätigt.</li>
         <li><b>Das Ziel ist eingebaut: Das ist ein genetischer Algorithmus.</b> <span class="tag t-sicher">Sicher</span><br>
         Selektion (beste 20 %), Rekombination, Mutation, das Ganze gegen eine vorgegebene Fitnessfunktion. Dass die
-        Population zum Ziel läuft, ist garantiert. Das ist Optimierung, keine Emergenz. <i>Gegenprobe:</i> Zielfarbe
-        verschieben. Die Population folgt jedem beliebigen Ziel.</li>
+        Population zum Ziel läuft, ist garantiert. Das ist Optimierung, keine Emergenz. Der „Urzustand“ aus dem Video ist
+        also nicht der Ausgangszustand (der ist bunt, Fehler 0,305), sondern die Vorgabe des Programmierers. Das ist ein
+        Regler wie beim Thermostat. <i>Gegenprobe:</i> Zielfarbe verschieben. Die Population folgt jedem beliebigen Ziel.</li>
         <li><b>Der beste Loop wird mit Konnektor schlechter.</b> <span class="tag t-wahr">Wahrscheinlich</span><br>
         In Generation 0 liegt ein Loop zufällig fast im Ziel (0,0015). Danach pendelt der beste Fehler bei
         etwa 0,003–0,004. Der Grund: 72 % ist fast genau der Fixpunkt der Layer-Abbildung g(s)=3,61·s·(1−s),
@@ -110,8 +113,9 @@
         8-fache Abbildung schwächer verstärkt, und der beste Fehler fällt um Größenordnungen.</li>
         <li><b>Ohne Konnektor passiert farblich nichts.</b> <span class="tag t-sicher">Sicher</span><br>
         Rot und Blau ändern sich nie, nur die Größe läuft chaotisch. Der Fehler springt nach einer Generation auf
-        etwa 0,23 und bleibt dort. <span class="tag t-verm">Vermutung</span> Die rote Kurve im Video ist welliger.
-        Dort steckt wohl eine andere Layer-Funktion, die im Screenshot nicht steht. An der Kernaussage ändert das nichts.</li>
+        etwa 0,23 und bleibt dort. Die rote Kurve im Video ist dagegen eine Welle. Laut Video (ca. 5:40) entsteht sie, „weil sich die Information pro Layer
+        unterscheidet“. Die Welle ist also eine eingebaute Eingabe der acht Layer und kein Ergebnis des Systems. Diese
+        Layer-Funktion steht nicht im Screenshot, deshalb läuft mein Nachbau hier anders. An der Kernaussage ändert das nichts.</li>
       </ol>
     </div>
     <div class="card">

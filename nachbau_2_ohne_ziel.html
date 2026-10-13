@@ -55,7 +55,9 @@
   <h1>1.000 Loops — ohne vorgegebenes Ziel</h1>
   <p class="sub">Nachbau mit den Regeln, die im Video unten auf der Seite stehen: 1.000 Kreise auf einem Ring,
   je Generation achtmal g(s) = 3,61·s·(1−s) auf die Größe. Der Konnektor mischt 82 % Eigenzustand mit je 9 %
-  linkem und rechtem Nachbarn und addiert Gauß-Rauschen (σ = 0,0015). Gleiche Startwerte für beide Seiten.</p>
+  linkem und rechtem Nachbarn und addiert Gauß-Rauschen (σ = 0,0015). Gleiche Startwerte für beide Seiten.
+  Behauptung im Video (ca. 6:15–7:45): Das violette „Wellenmuster“ ist eine Grundinformation, die sich auf den Ursprung
+  zurückverfolgen lässt.</p>
 
   <div class="bar">
     <button class="primary" id="play">▶ Abspielen</button>
@@ -105,6 +107,7 @@
       <div class="m3" style="grid-template-columns:1fr 1fr">
         <div><div class="k">Endfarbe (Mittel, Gen 500)</div><div class="v" id="endC"></div></div>
         <div><div class="k">Startfarbe (Mittel)</div><div class="v" id="startC"></div></div>
+        <div><div class="k">Vom Start noch rekonstruierbar (R²), mit Konnektor</div><div class="v" id="r2v"></div></div>
       </div>
     </div>
   </div>
@@ -115,6 +118,12 @@
       <li><b>Die Regeln stehen im Video und sind exakt umgesetzt.</b> <span class="tag t-sicher">Sicher</span><br>
       Nach 500 Generationen mit Konnektor kommt der Nachbau auf Farb-Streuung / Größen-Streuung / Nachbar-Unterschied
       0,043 / 0,180 / 0,004. Das Video zeigt 0,043 / 0,179 / 0,004.</li>
+      <li><b>Zurückverfolgen lässt sich der Ursprung nicht.</b> <span class="tag t-sicher">Sicher</span><br>
+      Mittelung vernichtet Information. Rechts im Kasten „Gegenproben“ steht, wie viel vom Startmuster sich mit dem
+      bestmöglichen Rückrechner (Wiener-Filter, Dynamik und Rauschen bekannt) noch rekonstruieren lässt: nach 10 Generationen
+      95 %, nach 50 noch 33 %, nach 100 noch 22 %, nach 500 nur noch <b>6 %</b>. Mit einer echten Rückrechnung habe ich das
+      geprüft: Die Korrelation zwischen Rekonstruktion und Start liegt bei r = 0,22, also R² = 0,05. Übrig bleibt der Mittelwert
+      (Violett) und etwa 100 von 999 groben Wellen. Welcher Loop am Anfang welche Farbe hatte, ist weg.</li>
       <li><b>Ohne Konnektor hat die Farbe gar keine Dynamik.</b> <span class="tag t-sicher">Sicher</span><br>
       Die linke Seite ist deshalb keine echte Kontrollgruppe: Dort kann sich farblich nichts ändern.</li>
       <li><b>„Kein Ziel“, aber der Endpunkt steht von Anfang an fest.</b> <span class="tag t-sicher">Sicher</span><br>
@@ -176,12 +185,14 @@ function simulateRing(opt){
   const cosT=new Float64Array(N),sinT=new Float64Array(N);for(let q=0;q<N;q++){cosT[q]=Math.cos(2*Math.PI*q/N);sinT[q]=Math.sin(2*Math.PI*q/N);}
   const P2=new Float64Array(N),lam=new Float64Array(N);
   for(let q=1;q<N;q++){let re=0,im=0;for(let j=0;j<N;j++){const idx=(j*q)%N;re+=c0[j]*cosT[idx];im-=c0[j]*sinT[idx];}P2[q]=re*re+im*im;lam[q]=a0+2*k*cosT[q];}
-  const theory=[];
-  for(let t=0;t<=T;t++){let v=0,nz=0;for(let q=1;q<N;q++){const l2=lam[q]*lam[q],l2t=Math.pow(l2,t);v+=P2[q]*l2t;
-      nz+=Math.abs(1-l2)<1e-12?t:(1-l2t)/(1-l2);}
-    theory.push(Math.sqrt(v/(N*N)+SIG*SIG*nz/N));}
+  const theory=[],r2=[];
+  for(let t=0;t<=T;t++){let v=0,nz=0,rn=0,rd=0;for(let q=1;q<N;q++){const l2=lam[q]*lam[q],l2t=Math.pow(l2,t);v+=P2[q]*l2t;
+      const g=Math.abs(1-l2)<1e-12?t:(1-l2t)/(1-l2);nz+=g;
+      // Wiener: Anteil von Mode q, der aus dem Zustand bei t noch rekonstruierbar ist
+      const Sg=P2[q]*l2t,Nn=N*SIG*SIG*g;rd+=P2[q];if(Sg+Nn>0)rn+=P2[q]*Sg/(Sg+Nn);}
+    theory.push(Math.sqrt(v/(N*N)+SIG*SIG*nz/N));r2.push(rd>0?rn/rd:1);}
   let endMean=0,startMean=0;for(let i=0;i<N;i++){endMean+=cb[i];startMean+=c0[i];}
-  return {cA,sA,cB,sB,met,theory,T,N,endMean:endMean/N,startMean:startMean/N};
+  return {cA,sA,cB,sB,met,theory,r2,T,N,endMean:endMean/N,startMean:startMean/N};
 }
 // CORE-END
 
@@ -216,7 +227,7 @@ function simulateRing(opt){
     const t=+$('gen').value;$('genl').textContent='Generation '+t+' / 500';
     drawGrid('cvA',run.cA,run.sA,t);drawGrid('cvB',run.cB,run.sB,t);drawChart(t);
     $('aC').textContent=f3(run.met.A.c[t]);$('aS').textContent=f3(run.met.A.s[t]);$('aN').textContent=f3(run.met.A.n[t]);
-    $('bC').textContent=f3(run.met.B.c[t]);$('bS').textContent=f3(run.met.B.s[t]);$('bN').textContent=f3(run.met.B.n[t]);
+    $('r2v').textContent=Math.round(run.r2[t]*100)+' %';$('bC').textContent=f3(run.met.B.c[t]);$('bS').textContent=f3(run.met.B.s[t]);$('bN').textContent=f3(run.met.B.n[t]);
   }
   function stop(){clearInterval(timer);timer=0;$('play').textContent='▶ Abspielen';}
   $('play').onclick=()=>{if(timer){stop();return;}if(+$('gen').value>=500)$('gen').value=0;$('play').textContent='⏸ Pause';

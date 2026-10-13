@@ -56,9 +56,9 @@
   <h1>Entsteht strukturelles Gedächtnis?</h1>
   <p class="sub">Nachbau des Video-Labors. 1.000 Zustände mischen sich entlang veränderlicher Verbindungen.
   Unähnliche Verbindungen schwächen sich ab und reißen, neue entstehen zwischen ähnlichen Zuständen
-  (höchstens 3.200). Eine Störung kappt 30 % der Kanten und würfelt 30 % der Kreise neu. Danach die Frage
-  aus dem Video: Kommen <i>dieselben</i> Kanten zurück? Neu gegenüber dem Video ist die Zufallserwartung als
-  Vergleichsmaßstab.</p>
+  (höchstens 3.200). Eine Störung kappt 30 % der Kanten und würfelt 30 % der Kreise neu. Behauptung im Video
+  (ab ca. 7:50): Die adaptiven Verbindungen „erzeugen wieder eine Urfassung“, das System repariert sich selbst.
+  Neu gegenüber dem Video: Zufallserwartung, Startfarbe, Störstärke und die Versuche D–F, die diese Behauptung prüfen.</p>
 
   <div class="bar">
     <button class="primary" id="run">▶ Start</button>
@@ -66,8 +66,10 @@
     <button id="hund">+100 Generationen</button>
     <button id="restart">↻ Neustart</button>
     <button class="danger" id="dist">⚡ Störung auslösen</button>
-    <span class="lbl" style="margin-left:6px">Kandidaten</span>
-    <select id="mode"><option value="global">global (wie im Video beschrieben)</option><option value="raeumlich">räumlich (nur Gitternachbarn)</option></select>
+    <span class="lbl" style="margin-left:6px">Vernetzung</span>
+    <select id="mode"><option value="global">adaptiv, global (wie im Video)</option><option value="raeumlich">adaptiv, nur Gitternachbarn</option><option value="fest">feste Verbindungen (Kontrolle im Video)</option></select>
+    <span class="lbl">Startfarbe</span><input type="range" id="sm" min="0.1" max="0.9" step="0.05" value="0.5" style="width:80px"><span class="pill" id="vSm"></span>
+    <span class="lbl">Störstärke</span><input type="range" id="nf" min="0.1" max="1" step="0.1" value="0.3" style="width:80px"><span class="pill" id="vNf"></span>
     <span class="lbl">Ähnlichkeit ε</span><input type="range" id="eps" min="0.05" max="0.4" step="0.01" value="0.25" style="width:90px"><span class="pill" id="vEps"></span>
     <span class="lbl">Tempo</span><input type="range" id="tempo" min="1" max="20" step="1" value="4" style="width:80px">
     <span class="pill" id="genPill">Generation 0</span>
@@ -104,6 +106,8 @@
         <div class="stat hl"><div class="k">überlebt (nie gekappt)</div><div class="v" id="sPers"></div></div>
         <div class="stat hl"><div class="k">zurückgekehrt</div><div class="v" id="sRet"></div></div>
         <div class="stat hl"><div class="k">Zufallserwartung dafür</div><div class="v" id="sExp"></div></div>
+        <div class="stat hl"><div class="k">Farbe vor Störung (Mittel)</div><div class="v" id="sMb"></div></div>
+        <div class="stat hl"><div class="k">Farbe jetzt · bloßes Mitteln</div><div class="v" id="sMn"></div></div>
       </div>
       <div class="verdict" id="verdict">Noch keine Störung. Erst die Struktur entwickeln lassen, dann „Störung auslösen“.</div>
       <p class="note">*Farbgruppen = Anzahl besetzter Abschnitte aus zehn gleich breiten Farbbereichen (wie im Video).
@@ -115,37 +119,44 @@
     <div class="card">
       <h2>Was hier wirklich passiert</h2>
       <ol class="find">
+        <li><b>Die „Reparatur“ der Farbe ist bloßes Mitteln.</b> <span class="tag t-sicher">Sicher</span><br>
+        Die Mischregel zieht jeden Kreis zum gewichteten Mittel seiner Nachbarn. Nach der Störung endet das System deshalb beim
+        Mittelwert aus den alten Farben und den neu gewürfelten. Im Video sieht das wie Reparatur aus, weil der Konsens bei
+        Violett (0,5) liegt und die gewürfelten Farben im Schnitt ebenfalls 0,5 sind. <i>Versuch D:</i> Mit bläulichem Start (0,30)
+        endet das System nach der Störung bei 0,34, nicht bei 0,30. <i>Versuch F:</i> Bei 100 % Störung landen Start 0,30 und
+        Start 0,80 beide bei 0,49. Vom ursprünglichen Muster bleibt nichts übrig.</li>
+        <li><b>Adaptive Verbindungen erinnern sich schlechter als feste.</b> <span class="tag t-sicher">Sicher</span><br>
+        Feste Verbindungen (die Kontrolle im Video) behalten alle 70 % ungekappten Kanten, also J = <b>0,70</b>. Adaptive Verbindungen
+        ersetzen gekappte Kanten durch neue, fremde: J = 0,54. Die Farbe kehrt in beiden Fällen zum Mittel zurück.
+        <i>Versuch E</i> zeigt das.</li>
         <li><b>Die Kantenähnlichkeit J misst vor allem, was die Störung überlebt hat.</b> <span class="tag t-sicher">Sicher</span><br>
-        70 % der Kanten werden gar nicht gekappt. Bleiben sie stehen und kommt nichts zurück, ist
-        J = 0,7·3.200 / (3.200 + 0,3·3.200) ≈ <b>0,54</b>. Genau dort landet der globale Modus, und die gestrichelte
-        Zufallslinie liegt deckungsgleich darauf.</li>
-        <li><b>Im globalen Modus gibt es kein Kanten-Gedächtnis.</b> <span class="tag t-sicher">Sicher</span><br>
-        Ein gestörter Knoten ist nach der Erholung ähnlich zu Hunderten anderen. Dass er wieder genau seinen alten
-        Partner aus rund 500.000 möglichen Paaren findet, passiert nur mit Zufallsrate. Im Test kamen 2 Kanten zurück,
-        erwartet waren 1,9.</li>
+        Bleiben 70 % stehen und kommt nichts zurück, ist J = 0,7·3.200 / (3.200 + 0,3·3.200) ≈ 0,54. Zurück kommen im globalen
+        Modus 2 Kanten bei 1,9 erwarteten, also reiner Zufall.</li>
         <li><b>Im räumlichen Modus ist J hoch, aber aus Geometrie.</b> <span class="tag t-sicher">Sicher</span><br>
-        Es gibt nur 3.807 Nachbarpaare, 3.200 davon dürfen belegt sein (84 %). Dann trifft schon der Zufall die alten
-        Kanten oft: J ≈ 0,80 bei einer Zufallslinie von ≈ 0,79.</li>
+        Es gibt nur 3.807 Nachbarpaare, 3.200 davon dürfen belegt sein (84 %). Dann trifft schon der Zufall die alten Kanten oft:
+        J ≈ 0,80 bei einer Zufallslinie von ≈ 0,79 <i>(Versuch B)</i>.</li>
         <li><b>Echtes Wiederfinden gibt es nur räumlich und mit mehreren Farbgruppen.</b> <span class="tag t-wahr">Wahrscheinlich</span><br>
-        Bei ε = 0,10 bleiben Farbgruppen bestehen. Dann kommen etwa doppelt so viele Kanten zurück, wie der Zufall erwarten lässt.
-        Das Gedächtnis steckt dabei aber nicht in den Kanten, sondern in den ungestörten 70 % der Knoten: Deren Farben
-        ziehen die gestörten Nachbarn zurück, und die Kanten folgen den Farben.</li>
-        <li><b>Der Versuch im Video lief in den erstarrten Zustand.</b> <span class="tag t-verm">Vermutung</span><br>
-        Bei Generation 630 zeigt das Video eine Farbgruppe und Streuung 0,0049, also Konsens. Dann ist jede Kante so gut wie
-        jede andere, und „Gedächtnis“ ist gar nicht mehr messbar. Das Video empfiehlt selbst 150–300 Generationen.</li>
+        Bei ε = 0,10 kommen etwa doppelt so viele Kanten zurück wie per Zufall <i>(Versuch C)</i>. Das Gedächtnis steckt dann in den
+        Farben der ungestörten Nachbarn, nicht in den Verbindungen.</li>
       </ol>
     </div>
     <div class="card exp">
-      <h2>Drei Versuche zum Durchklicken</h2>
-      <p class="note" style="margin-top:0">Jeder Knopf stellt den Versuch ein, rechnet bis zur Störung, löst sie aus und rechnet 300 Generationen weiter.</p>
-      <p style="margin:12px 0 4px;font-size:13px"><b>A · wie im Video</b>: global, ε = 0,25, Störung bei Gen 630</p>
-      <button data-exp="global,0.25,630">Versuch A</button>
-      <p style="margin:10px 0 4px;font-size:13px"><b>B · Geometrie</b>: räumlich, ε = 0,25, Störung bei Gen 630</p>
-      <button data-exp="raeumlich,0.25,630">Versuch B</button>
-      <p style="margin:10px 0 4px;font-size:13px"><b>C · echtes Wiederfinden</b>: räumlich, ε = 0,10, Störung bei Gen 630</p>
-      <button data-exp="raeumlich,0.10,630">Versuch C</button>
-      <p class="note">Achte auf die violette Linie gegen die gestrichelte: Nur wenn J deutlich darüber liegt, kommen mehr
-      alte Kanten zurück als durch Zufall.</p>
+      <h2>Sechs Versuche zum Durchklicken</h2>
+      <p class="note" style="margin-top:0">Jeder Knopf stellt alles ein, rechnet bis Generation 630, löst die Störung aus und rechnet 300 Generationen weiter.</p>
+      <p style="margin:12px 0 4px;font-size:13px"><b>A · wie im Video</b>: adaptiv global, Start violett, Störung 30 %</p>
+      <button data-exp="global,0.25,630,0.5,0.3">Versuch A</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>B · Geometrie</b>: nur Gitternachbarn</p>
+      <button data-exp="raeumlich,0.25,630,0.5,0.3">Versuch B</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>C · echtes Wiederfinden</b>: Gitternachbarn, ε = 0,10</p>
+      <button data-exp="raeumlich,0.10,630,0.5,0.3">Versuch C</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>D · Reparatur oder Mittelwert?</b> Start bläulich (0,30)</p>
+      <button data-exp="global,0.25,630,0.3,0.3">Versuch D</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>E · Kontrolle</b>: feste Verbindungen wie im Video</p>
+      <button data-exp="fest,0.25,630,0.5,0.3">Versuch E</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>F · Totalstörung</b>: Start rötlich (0,80), 100 % neu gewürfelt</p>
+      <button data-exp="global,0.25,630,0.8,1">Versuch F</button>
+      <p class="note">Achte auf zwei Dinge: die violette gegen die gestrichelte Linie (Kanten) und rechts „Farbe vor Störung“
+      gegen „Farbe jetzt“ (Reparatur).</p>
     </div>
   </div>
 
@@ -157,6 +168,8 @@
       <tr><td>Start / Obergrenze</td><td>2.931 Kanten zufällig, höchstens 3.200</td><td>Zahlen aus dem Video</td></tr>
       <tr><td>Mischen</td><td>5 % Richtung gewichtetes Nachbarmittel, Rauschen σ = 0,0013 (Farbe) / 0,02 (Größe)</td><td>Annahme, abgestimmt auf Video-Werte bei Gen 630 (Streuung 0,0049, Größenänderung 0,017)</td></tr>
       <tr><td>Kantenregel</td><td>Gewicht + 0,05·(1 − d/1,2ε), Kappen unter 0,05; neue Kante wenn d &lt; ε; isolierte Knoten dürfen die schwächste Kante verdrängen</td><td>Annahme, im Video nur in Worten beschrieben</td></tr>
+      <tr><td>Feste Verbindungen</td><td>keine Gewichtsänderung, keine neuen Kanten; die Störung kappt trotzdem 30 %</td><td>im Video als „Kontrolle“ gezeigt, Umsetzung angenommen</td></tr>
+      <tr><td>Startfarbe, Störstärke</td><td>mittlerer Rot-Anteil am Start, Anteil neu gewürfelter Kreise</td><td>neu, nicht im Video (Video: 0,5 und 30 %)</td></tr>
       <tr><td>Kandidatenmenge</td><td>global oder räumlich umschaltbar</td><td>offen; das Video sagt „Platzierung nur zur Visualisierung“, also eher global</td></tr>
       <tr><td>Zufallserwartung</td><td>jede neue Kante als zufälliges freies Kandidatenpaar</td><td>neu, nicht im Video</td></tr>
     </table>
@@ -171,10 +184,11 @@ function makeGauss(rnd){let spare=null;return function(){if(spare!==null){const 
 
 function makeMemorySim(opt){
   const N=1000, COLS=40, ROWS=25, MAXE=3200, INIT=2931, ALPHA=0.05, SC=0.0013, SS=0.02, TRIES=300;
-  const eps=opt.eps, tw=1.2*opt.eps, spatial=opt.mode==='raeumlich';
+  const eps=opt.eps, tw=1.2*opt.eps, spatial=opt.mode==='raeumlich', fixed=opt.mode==='fest';
+  const startMean=opt.startMean===undefined?0.5:opt.startMean, span=2*Math.min(startMean,1-startMean);
   const rnd=mulberry32(opt.seed), gauss=makeGauss(rnd);
   const c=new Float64Array(N), s=new Float64Array(N);
-  for(let i=0;i<N;i++){c[i]=rnd();s[i]=rnd();}
+  for(let i=0;i<N;i++){c[i]=startMean+(rnd()-0.5)*span;s[i]=rnd();}
   const nbM=Array.from({length:N},()=>[]); let moorePairs=0;
   for(let i=0;i<N;i++){const x=i%COLS,y=(i/COLS)|0;
     for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){if(!dx&&!dy)continue;
@@ -200,6 +214,7 @@ function makeMemorySim(opt){
       cn+=gauss()*SC;sn+=gauss()*SS;
       cn=cn<0?0:cn>1?1:cn;sn=sn<0?0:sn>1?1:sn;ds+=Math.abs(sn-s[i]);c[i]=cn;s[i]=sn;}
     lastDs=ds/N;
+    if(fixed){if(ref)for(const k of ref)if(!E.has(k))everAbsent.add(k);gen++;return;}
     for(const [k,w] of E){const d=Math.abs(c[k>>10]-c[k&1023]);const w2=Math.min(1,w+0.05*(1-d/tw));
       if(w2<0.05)delEdge(k);else E.set(k,w2);}
     let absentRef=0;if(ref){let p=0;for(const k of ref)if(E.has(k))p++;absentRef=ref.size-p;}
@@ -217,19 +232,19 @@ function makeMemorySim(opt){
     gen++;
   }
 
-  function disturb(){
+  function disturb(nodeFrac){if(nodeFrac===undefined)nodeFrac=0.3;
     ref=new Set(E.keys());everAbsent=new Set();expRet=0;distGen=gen;
     const keys=[...E.keys()];for(let i=keys.length-1;i>0;i--){const j=(rnd()*(i+1))|0;[keys[i],keys[j]]=[keys[j],keys[i]];}
     const cut=Math.round(0.3*keys.length);for(let q=0;q<cut;q++){delEdge(keys[q]);everAbsent.add(keys[q]);}
     const idx=Array.from({length:N},(_,i)=>i);for(let i=N-1;i>0;i--){const j=(rnd()*(i+1))|0;[idx[i],idx[j]]=[idx[j],idx[i]];}
-    for(let q=0;q<0.3*N;q++){c[idx[q]]=rnd();s[idx[q]]=rnd();}
+    for(let q=0;q<nodeFrac*N;q++){c[idx[q]]=rnd();s[idx[q]]=rnd();}
   }
 
   function metrics(){
     let m=0;for(let i=0;i<N;i++)m+=c[i];m/=N;let v=0;for(let i=0;i<N;i++)v+=(c[i]-m)**2;
     const bins=new Uint8Array(10);for(let i=0;i<N;i++)bins[Math.min(9,(c[i]*10)|0)]=1;
     let groups=0;for(let b=0;b<10;b++)groups+=bins[b];
-    const out={gen,edges:E.size,maxEdges:MAXE,spread:Math.sqrt(v/N),groups,ds:lastDs,distGen,J:null,Jnull:null,returned:0,persisted:0,expRet:0};
+    const out={mean:m,gen,edges:E.size,maxEdges:MAXE,spread:Math.sqrt(v/N),groups,ds:lastDs,distGen,J:null,Jnull:null,returned:0,persisted:0,expRet:0};
     if(ref){let inter=0,ret=0;for(const k of ref)if(E.has(k)){inter++;if(everAbsent.has(k))ret++;}
       const pers=inter-ret;out.J=inter/(E.size+ref.size-inter);
       out.Jnull=(pers+expRet)/(E.size+ref.size-pers-expRet);out.returned=ret;out.persisted=pers;out.expRet=expRet;}
@@ -242,9 +257,9 @@ function makeMemorySim(opt){
 (function(){
   const $=id=>document.getElementById(id);
   const css=getComputedStyle(document.documentElement),C=n=>css.getPropertyValue(n).trim();
-  let opt={mode:'global',eps:0.25,seed:7},S=null,hist=[],running=false,raf=0;
+  let opt={mode:'global',eps:0.25,seed:7,startMean:0.5,nodeFrac:0.3},preMean=null,S=null,hist=[],running=false,raf=0;
   const f3=x=>x.toFixed(3).replace('.',','),f4=x=>x.toFixed(4).replace('.',',');
-  function restart(){stop();S=makeMemorySim(opt);hist=[S.metrics()];render();}
+  function restart(){stop();preMean=null;S=makeMemorySim(opt);hist=[S.metrics()];render();}
   function stepN(n){for(let q=0;q<n;q++){S.step();hist.push(S.metrics());}}
   function colorOf(c){const r=Math.round(70+170*c),g=Math.round(110-50*c),b=Math.round(255-175*c);return `rgb(${r},${g},${b})`;}
   function drawDots(){
@@ -285,11 +300,18 @@ function makeMemorySim(opt){
       const ratio=m.returned/Math.max(m.expRet,0.5),since=m.gen-m.distGen;
       let txt;
       if(since<30)txt='Störung läuft seit '+since+' Generationen. Noch zu früh für ein Urteil.';
-      else if(m.returned<10&&m.expRet<10)txt='Kaum Rückkehr ('+m.returned+' Kanten, Zufall erwartet '+m.expRet.toFixed(1).replace('.',',')+'). J ist fast nur die Zahl der Kanten, die überlebt haben, also kein Gedächtnis.';
+      else if(m.returned<10&&m.expRet<10)txt='Kaum Rückkehr ('+m.returned+(m.returned===1?' Kante':' Kanten')+', Zufall erwartet '+m.expRet.toFixed(1).replace('.',',')+'). J ist fast nur die Zahl der Kanten, die überlebt haben, also kein Gedächtnis.';
       else if(ratio<1.3)txt='Zurückgekehrte Kanten ≈ Zufall (Verhältnis '+ratio.toFixed(2).replace('.',',')+'). Hohe Ähnlichkeit, aber kein Gedächtnis: Das erklärt die kleine Kandidatenmenge.';
       else txt='Mehr Rückkehr als Zufall (Verhältnis '+ratio.toFixed(2).replace('.',',')+'). Die alten Partner werden wieder ähnlich, weil die ungestörten Nachbarn die Farben zurückziehen. Das Gedächtnis liegt in den Zuständen, nicht in den Kanten.';
+      if(since>=100&&preMean!==null){const mix=(1-opt.nodeFrac)*preMean+opt.nodeFrac*0.5;
+        txt+=' Farbe: vorher '+f3(preMean)+', jetzt '+f3(m.mean)+'. Bloßes Mitteln ergäbe '+f3(mix)+'. '+
+          (Math.abs(m.mean-preMean)<0.02&&Math.abs(mix-preMean)<0.02?'Sieht nach Reparatur aus, aber nur, weil die Startfarbe bei 0,5 liegt. Versuch D zeigt den Unterschied.':
+           Math.abs(m.mean-mix)<Math.abs(m.mean-preMean)?'Die Farbe folgt dem Mittelwert, nicht dem alten Zustand. Keine Reparatur.':'Die Farbe liegt näher am alten Zustand.');}
       $('verdict').textContent=txt;}
     $('vEps').textContent=opt.eps.toFixed(2).replace('.',',');
+    $('vSm').textContent=opt.startMean.toFixed(2).replace('.',',');$('vNf').textContent=Math.round(opt.nodeFrac*100)+' %';
+    $('sMb').textContent=preMean===null?'–':f3(preMean);
+    $('sMn').textContent=preMean===null?f3(m.mean):f3(m.mean)+' · '+f3((1-opt.nodeFrac)*preMean+opt.nodeFrac*0.5);
     drawDots();drawChart();
   }
   function frame(){stepN(+$('tempo').value);render();if(running)raf=requestAnimationFrame(frame);}
@@ -298,13 +320,17 @@ function makeMemorySim(opt){
   $('one').onclick=()=>{stepN(1);render();};
   $('hund').onclick=()=>{stepN(100);render();};
   $('restart').onclick=restart;
-  $('dist').onclick=()=>{S.disturb();hist[hist.length-1]=S.metrics();render();};
+  $('dist').onclick=()=>{preMean=S.metrics().mean;S.disturb(opt.nodeFrac);hist[hist.length-1]=S.metrics();render();};
   $('mode').onchange=e=>{opt.mode=e.target.value;restart();};
+  $('sm').oninput=e=>{opt.startMean=+e.target.value;render();};$('sm').onchange=restart;
+  $('nf').oninput=e=>{opt.nodeFrac=+e.target.value;render();};
   $('eps').oninput=e=>{opt.eps=+e.target.value;$('vEps').textContent=opt.eps.toFixed(2).replace('.',',');};
   $('eps').onchange=restart;
   document.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{
-    const [mode,eps,td]=b.dataset.exp.split(',');opt.mode=mode;opt.eps=+eps;$('mode').value=mode;$('eps').value=eps;
-    restart();stepN(+td);S.disturb();hist[hist.length-1]=S.metrics();stepN(300);render();});
+    const [mode,eps,td,sm,nf]=b.dataset.exp.split(',');opt.mode=mode;opt.eps=+eps;opt.startMean=+sm;opt.nodeFrac=+nf;
+    $('mode').value=mode;$('eps').value=eps;$('sm').value=sm;$('nf').value=nf;
+    restart();stepN(+td);preMean=S.metrics().mean;S.disturb(opt.nodeFrac);hist[hist.length-1]=S.metrics();stepN(300);render();
+    $('verdict').scrollIntoView({behavior:'smooth',block:'center'});});
   window.addEventListener('resize',render);
   restart();
 })();

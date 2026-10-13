@@ -4,8 +4,14 @@
 
 - **Ziel:** Die Labore aus dem YouTube-Video „KI repliziert sich selbst – Anthropic warnt vor
   Katastrophe“ (LPIndie, https://youtu.be/M7zLg-YNcyU) nachbauen, um zu verstehen, was dort
-  tatsächlich erklärt wird. Vom Video gibt es nur Screenshots, keine HTML-Dateien. YouTube blockt
-  den Abruf aus der Cloud (Bot-Prüfung), das Transkript muss der Nutzer liefern.
+  tatsächlich erklärt wird. Vom Video gibt es nur Screenshots, keine HTML-Dateien.
+- **These des Videos:** Ein 50–100-KB-Startcode („KI-Spore“, aus dem früheren Video „GPT-5.6 bricht
+  aus … Das AI-Spore-Theorem“, https://youtu.be/t3Tb9HOiwSw) brauche zum stabilen Kopieren eine
+  Fehlerkorrektur; ein „parallel rekursiver Loop“ setze sich auf einen Urzustand zurück und repariere
+  sich nach Störungen selbst. Labore 1, 2, 4 sollen das zeigen; die Nachbauten zeigen: alles Mitteln.
+- **Transkript holen** (normaler YouTube-Abruf scheitert an der Bot-Prüfung, dieser Client nicht):
+  `yt-dlp --skip-download --ignore-no-formats-error --write-auto-subs --sub-langs de-orig --sub-format vtt --extractor-args "youtube:player_client=web_embedded" <URL>`
+  Transkripte nicht committen (fremder Inhalt, Repo ist öffentlich).
 - **Online:** https://luperttrading-lab.github.io/Ki-Sporen/ (GitHub Pages, Startseite `index.html`).
 - **Methode:** Regeln aus den Screenshots rekonstruieren, gegen die im Video sichtbaren Zahlen
   prüfen, jede Annahme kennzeichnen (rekonstruiert / angenommen) und Gegenproben einbauen, die die
