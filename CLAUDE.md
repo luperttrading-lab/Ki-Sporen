@@ -27,6 +27,7 @@
 | `nachbau_1_loop_labor.html` | Video-Labor 1: Oberfläche wie im Video; Start exakt (numpy default_rng(44)), gezeigte Loops linspace(0,999,160), Kreisbild aus Screenshot gemessen; Sinus-Layer an die rote Videokurve angepasst (A 0,126, P 245, Abweichung 0,013), logistisch umschaltbar; Gegenproben darunter |
 | `nachbau_2_ohne_ziel.html` | Video-Labor 2: exakt rekonstruiert (numpy default_rng(20261013), Farbe U(0,05;0,95), Größe U(0,12;0,88), Streuung mit n−1, Rauschen erst Größe dann Farbe); 101 Zeitpunkte vorgerechnet eingebettet; Gegenproben live mit Theoriekurve und R² |
 | `nachbau_4_gedaechtnis.html` | Video-Labor 4: Oberfläche wie im Video, Parameter an Video angepasst (Seed 359: Gen 0 und 630 exakt; Mischrate Farbe 0,0258, Größe 0,15; ε 0,47); Gegenproben und Versuche A–F getrennt darunter |
+| `sporen_labor.html` | eigene Gegenprobe zur Sporen-These: 64-Bit-Bauplan kopiert sich mit Kopierfehlern über 12×12 Geräte; vier Strategien nebeneinander (keine, Angleichung = Mehrheit wie Labor 2/4, Regelsystem + Ziel wie Labor 1, FNV-1a-Prüfsumme), Schalter „Zentrale erlaubt“, Störung auf x % der Geräte, Versuche A–D mit Seed 7; alles in der einen Datei |
 | `ausbreitungs_labor_sir.html` | eigene Erweiterung zum Artikel: SEIQ-Modell (Mean-Field) |
 | `netzwerk_labor_cluster.html` | eigene Erweiterung zum Artikel: SEIQ auf geclustertem Graphen |
 

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sporen-Labor</title>
+<style>
+  :root{--bg:#0a0e17;--panel:#111726;--panel2:#0d1320;--line:#1e293b;--tx:#e5edf7;--mut:#93a4bd;--acc:#60a5fa;--tq:#2dd4bf;
+    --s0:#3987e5;--s1:#d95926;--s2:#199e70;--s3:#c98500;--bad:#ef4444}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 16px 64px}
+  .back{display:inline-block;margin-bottom:14px;color:var(--mut);text-decoration:none;font-size:13px;font-weight:600}
+  .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:var(--tq);margin:0 0 10px}
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px;font-weight:800}
+  h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:30px 0 12px}
+  .sub{color:#cdd9ea;margin:0 0 6px;max-width:72ch}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px}
+  .intro{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:start}
+  @media(max-width:600px){.intro{grid-template-columns:1fr}}
+  .bp{width:144px;height:144px;image-rendering:pixelated;border-radius:8px;display:block}
+  .bpcap{font-size:12.5px;color:var(--mut);margin:6px 0 0}
+  ol.rd{margin:0;padding-left:20px;font-size:14px;color:#cdd9ea}
+  ol.rd li{margin:0 0 6px}
+  .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  button{font:inherit;font-size:14px;font-weight:600;color:var(--tx);background:#16213a;border:1px solid #24324d;border-radius:10px;padding:8px 13px;cursor:pointer}
+  button:hover{filter:brightness(1.15)}
+  button.pri{background:var(--acc);color:#071020;border-color:var(--acc);min-width:128px}
+  button.warn{background:#3a1d0b;border-color:#c2410c;color:#fed7aa}
+  .rnd{font-weight:700;font-variant-numeric:tabular-nums;margin-left:4px}
+  .sl{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;margin-top:14px}
+  @media(max-width:640px){.sl{grid-template-columns:1fr}}
+  .sl label{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--mut)}
+  .sl label b{color:var(--tx);font-variant-numeric:tabular-nums}
+  .sl input[type=range]{width:100%;accent-color:var(--acc);margin:6px 0 0}
+  .hint{font-size:12.5px;color:var(--mut);margin:2px 0 0}
+  .cen{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;color:#cdd9ea}
+  .cen input{width:18px;height:18px;margin-top:2px;accent-color:var(--tq);flex:none}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:700px){.panels{grid-template-columns:1fr}}
+  .pn{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px}
+  .pn h3{margin:0;font-size:16px;display:flex;align-items:center;gap:8px}
+  .pn h3 i{display:inline-block;width:18px;height:3px;border-radius:2px}
+  .pn h3 span{font-size:12px;font-weight:600;color:var(--mut)}
+  .pn .what{font-size:13px;color:#b9c7da;margin:6px 0 10px;min-height:3.9em}
+  .pn canvas{width:100%;display:block}
+  .pn .st{font-size:12.5px;color:#cdd9ea;margin:8px 0 0;font-variant-numeric:tabular-nums}
+  .pn .st .ok{color:#4ade80}.pn .st .no{color:#f87171}
+  .lg{display:flex;gap:6px 16px;font-size:12.5px;color:#cdd9ea;flex-wrap:wrap;margin-bottom:6px}
+  .lg i{display:inline-block;width:16px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+  .chart{position:relative}
+  .chart svg{width:100%;height:auto;display:block;touch-action:pan-y}
+  .tip{position:absolute;pointer-events:none;background:#0b1220;border:1px solid #24324d;border-radius:8px;padding:6px 9px;font-size:12px;color:#dbe5f3;white-space:nowrap;display:none;line-height:1.55}
+  .vs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:700px){.vs{grid-template-columns:1fr 1fr}}
+  .vs button{text-align:left;font-size:13px;padding:9px 11px;line-height:1.35}
+  .vs button b{display:block;font-size:14px}
+  .vs button.on{border-color:var(--tq);background:#0f2f2b}
+  .verdict{margin-top:12px;font-size:14px;color:#dbe5f3;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--tq);border-radius:10px;padding:12px 14px;min-height:3em}
+  .verdict .nums{font-variant-numeric:tabular-nums;color:var(--mut);font-size:13px;margin-top:6px}
+  ul.kl{margin:0;padding-left:20px;font-size:14px;color:#cdd9ea}
+  ul.kl li{margin:0 0 8px}
+  .ann{font-size:13px;color:var(--mut)}
+  .ann li{margin:0 0 5px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+  .tag.a{background:#2a2410;color:#facc15}.tag.r{background:#0f2f2b;color:var(--tq)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Alle Labore</a>
+  <p class="kicker">Eigene Gegenprobe · nicht im Video</p>
+  <h1>Sporen-Labor</h1>
+  <p class="sub">Das Video behauptet: Eine kleine „KI-Spore“ bleibt beim Kopieren stabil, weil der Loop aus dem Diagramm sie
+  „immer wieder auf einen Urzustand zurücksetzt“ (5:33) und nach Störungen „selbst repariert“ (8:50).
+  Hier wird das getestet: Ein Bauplan kopiert sich mit Kopierfehlern von Gerät zu Gerät, und vier Strategien versuchen,
+  ihn intakt zu halten. Zwei davon sind die Loops aus dem Video.</p>
+
+  <div class="card intro">
+    <div><canvas class="bp" id="bp" width="8" height="8" role="img" aria-label="Bauplan der Spore: ein Pilz aus 8 mal 8 Bit"></canvas>
+      <p class="bpcap">Der Bauplan: 8 × 8 = 64 Bit. Rot heißt später: falsch kopiertes Bit.</p></div>
+    <div><b>Eine Runde</b>
+      <ol class="rd">
+        <li><b>Aufräumen:</b> Ab 50 % Befall räumen Verteidiger auf, 3 % der befallenen Geräte pro Runde, wie die Quarantäne
+          im Artikel. Die freien Plätze werden wieder angesteckt, also wird laufend weiterkopiert.</li>
+        <li><b>Anstecken:</b> Ein freies Gerät neben einem befallenen wird mit 50 % Wahrscheinlichkeit angesteckt. Es bekommt
+          eine Kopie von einem befallenen Nachbarn. Dabei kippt jedes Bit mit der eingestellten Fehlerrate.</li>
+        <li><b>Korrigieren:</b> Jede Strategie wendet ihre Korrektur an (siehe die vier Felder).</li>
+      </ol></div>
+  </div>
+
+  <div class="card">
+    <div class="ctl">
+      <button id="play" class="pri">▶ Abspielen</button>
+      <button id="step">Schritt ›</button>
+      <button id="reset">↺ Neu</button>
+      <button id="dice">🎲 Anderer Zufall</button>
+      <button id="speed">Tempo 1×</button>
+      <span class="rnd" id="rnd">Runde 0</span>
+    </div>
+    <div class="sl">
+      <div><label for="mu">Kopierfehler pro Bit <b id="muv"></b></label><input id="mu" type="range" min="0" max="20" step="1" value="5">
+        <p class="hint" id="muh"></p></div>
+      <div><label for="df">Störung trifft <b id="dfv"></b></label><input id="df" type="range" min="10" max="90" step="10" value="60">
+        <p class="hint">Dreht auf so vielen befallenen Geräten dieselbe Zeile des Bauplans um (die Punkte des Pilzes).</p>
+        <button id="dist" class="warn" style="margin-top:8px">⚡ Störung auslösen</button></div>
+    </div>
+    <label class="cen"><input type="checkbox" id="cen"><span><b>Zentrale Instanz erlaubt.</b> Angleichung und Ziel dürfen dann
+      eine Zentrale benutzen, die alle Geräte sieht. Das widerspricht der Sporen-Idee, denn dann gibt es einen Punkt zum Abschalten.
+      Startet neu.</span></label>
+  </div>
+
+  <div class="panels" id="panels"></div>
+
+  <div class="card">
+    <div class="lg" id="lg"></div>
+    <div class="chart" id="chart">
+      <svg id="csv" viewBox="0 0 640 230" role="img" aria-label="Anteil intakter Sporen über die Runden, je Strategie"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <p class="hint">Anteil der befallenen Geräte, deren Bauplan exakt dem Original entspricht. ⚡ markiert eine Störung.</p>
+  </div>
+
+  <h2>Versuche</h2>
+  <div class="card">
+    <div class="vs">
+      <button data-v="A"><b>A · Nur Kopierfehler</b>0,5 % pro Bit, 100 Runden</button>
+      <button data-v="B"><b>B · Störung 30 %</b>ohne Kopierfehler</button>
+      <button data-v="C"><b>C · Störung 60 %</b>ohne Kopierfehler</button>
+      <button data-v="D"><b>D · Mit Zentrale</b>Kopierfehler + Störung 60 %</button>
+    </div>
+    <div class="verdict" id="verdict">Tipp auf einen Versuch. Er stellt die Regler ein, läuft durch und erklärt das Ergebnis.</div>
+  </div>
+
+  <h2>Was das zeigt</h2>
+  <div class="card">
+    <ul class="kl">
+      <li><b>Die Angleichung aus dem Video ist ein Mehrheitsentscheid.</b> Gegen einzelne, zufällige Fehler hilft sie. Sie bewahrt aber
+        die Mehrheit, nicht das Original: Trifft eine Störung mehr als die Hälfte, wird die Störung zur neuen „Urfassung“ (Versuch C).
+        Das ist derselbe Befund wie in Labor 4: Die „Reparatur“ endet beim Durchschnitt.</li>
+      <li><b>Sie braucht viele Kopien, die sich ständig vergleichen.</b> Eine einzelne Spore auf einem neuen Gerät, also genau der Fall
+        der Sporen-Idee, hat niemanden zum Abstimmen. Fehler, die früh an der Ausbreitungsfront passieren, werden an alle Nachkommen
+        vererbt. Dann sind sich die Nachbarn im Fehler einig (Versuch A).</li>
+      <li><b>Ein Ziel hilft nur, wenn es irgendwo unverfälscht liegt.</b> Reist es mit der Spore, ist es bloß eine zweite Kopie und wird
+        genauso falsch kopiert. Liegt es in einer Zentrale, funktioniert es, aber dann steckt die Information in der Zentrale und nicht
+        in der Spore, und die Zentrale lässt sich abschalten (Versuch D).</li>
+      <li><b>Die Prüfsumme löst das Problem exakt</b>, ohne Netz und ohne Zentrale, für 32 zusätzliche Bit. Sie kostet nur
+        Wiederholungen beim Kopieren. Das ist seit Jahrzehnten Standard: zip- und gzip-Dateien tragen eine CRC-32-Prüfsumme.</li>
+      <li><b>Bezug zum Artikel:</b> Dort ist das Kopieren gar nicht das Problem. Schwierig ist für kleine Modelle das Einrichten der
+        Inferenz auf fremder Hardware, und die Nutzlast sind Gigabyte an Modellgewichten, keine 50 KB.</li>
+    </ul>
+  </div>
+
+  <h2>Annahmen</h2>
+  <div class="card ann"><ul>
+    <li><span class="tag a">angenommen</span>Gitter aus 12 × 12 = 144 Geräten, jedes mit bis zu 4 Nachbarn. Start: ein Gerät in der Mitte.</li>
+    <li><span class="tag a">angenommen</span>Kopierfehler: Jedes Bit kippt unabhängig, auch die Bits des mitreisenden Ziels und der Prüfsumme.
+      Echte Datenübertragung ist um viele Größenordnungen genauer; die hohen Raten machen den Effekt in 100 Runden sichtbar.</li>
+    <li><span class="tag a">angenommen</span>Angleichung: Jedes Bit wird auf die Mehrheit gesetzt, bei Gleichstand bleibt das eigene.
+      Die Labore im Video mitteln Zahlen; bei Bits ist Mitteln und Runden dasselbe wie die Mehrheit.</li>
+    <li><span class="tag a">angenommen</span>Die Störung trifft nur den Bauplan, nicht das mitreisende Ziel und nicht die Prüfsumme.
+      Das ist großzügig für die Ziel-Strategie.</li>
+    <li><span class="tag r">Standard</span>Prüfsumme FNV-1a, 32 Bit: Ein zufälliger Fehler bleibt nur mit Wahrscheinlichkeit von etwa
+      1 : 4 Milliarden unentdeckt. Gegen absichtliche Fälschung hilft sie nicht, dafür bräuchte es eine Signatur.</li>
+  </ul></div>
+</div>
+<script>
+// CORE-START
+// Sporen-Labor: 64-Bit-Bauplan breitet sich über ein 12×12-Gitter aus, mit Kopierfehlern.
+const SP={W:12,H:12,L:64,LH:32,PINF:0.5,CLEAN:0.03,TRIES:3,ROW:3};
+SP.N=SP.W*SP.H;
+// Bauplan: 8×8-Pilz
+SP.ORIG=Uint8Array.from(('00111100'+'01111110'+'11111111'+'11011011'+'11111111'+'00011000'+'00011000'+'00111100').split('').map(Number));
+SP.NB=(function(){const nb=[];for(let y=0;y<SP.H;y++)for(let x=0;x<SP.W;x++){const a=[];
+  if(y>0)a.push((y-1)*SP.W+x);if(y<SP.H-1)a.push((y+1)*SP.W+x);if(x>0)a.push(y*SP.W+x-1);if(x<SP.W-1)a.push(y*SP.W+x+1);nb.push(a);}return nb;})();
+function spRng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+// FNV-1a über die 8 Bytes des Bauplans
+function spHash(code,o){let h=0x811c9dc5;for(let b=0;b<8;b++){let v=0;for(let k=0;k<8;k++)v=v<<1|code[o+b*8+k];h^=v;h=Math.imul(h,0x01000193);}return h>>>0;}
+function spWorld(strat,opt){
+  const {N,L,LH}=SP,w={strat,central:!!opt.central,mu:opt.mu,rnd:spRng(opt.seed||7),round:0,
+    inf:new Uint8Array(N),code:new Uint8Array(N*L),ziel:new Uint8Array(N*L),hb:new Uint8Array(N*LH),tries:0,copies:0,hist:[]};
+  const p0=Math.floor(SP.H/2)*SP.W+Math.floor(SP.W/2);
+  w.inf[p0]=1;w.code.set(SP.ORIG,p0*L);w.ziel.set(SP.ORIG,p0*L);
+  const h=spHash(SP.ORIG,0);for(let k=0;k<LH;k++)w.hb[p0*LH+k]=(h>>>(31-k))&1;
+  spMeasure(w);return w;}
+function spHashOk(w,i){let h=0;for(let k=0;k<SP.LH;k++)h=(h<<1|w.hb[i*SP.LH+k])>>>0;return h===spHash(w.code,i*SP.L);}
+function spStep(w){
+  const {N,L,LH,NB}=SP,r=w.rnd,mu=w.mu;
+  let cnt=0;for(let i=0;i<N;i++)cnt+=w.inf[i];
+  // 1) Aufräumen: ab halber Befallsquote werden 3 % der befallenen Geräte gereinigt
+  if(cnt>=N/2)for(let i=0;i<N;i++)if(w.inf[i]&&r()<SP.CLEAN)w.inf[i]=0;
+  // 2) Ansteckung: freie Geräte kopieren von einem befallenen Nachbarn (gleichzeitig)
+  const was=w.inf.slice(),todo=[];
+  for(let i=0;i<N;i++){if(was[i])continue;const src=NB[i].filter(j=>was[j]);if(!src.length||r()>=SP.PINF)continue;todo.push([i,src]);}
+  for(const [i,src] of todo){
+    const tries=w.strat==='pruef'?SP.TRIES:1;
+    for(let t=0;t<tries;t++){
+      const j=src[(r()*src.length)|0];w.tries++;
+      for(let k=0;k<L;k++)w.code[i*L+k]=w.code[j*L+k]^(r()<mu?1:0);
+      if(w.strat==='ziel'&&!w.central)for(let k=0;k<L;k++)w.ziel[i*L+k]=w.ziel[j*L+k]^(r()<mu?1:0);
+      if(w.strat==='pruef'){for(let k=0;k<LH;k++)w.hb[i*LH+k]=w.hb[j*LH+k]^(r()<mu?1:0);if(!spHashOk(w,i))continue;}
+      w.inf[i]=1;w.copies++;break;}
+  }
+  // 3) Korrektur
+  spCorrect(w);
+  w.round++;spMeasure(w);}
+function spCorrect(w){
+  const {N,L,NB}=SP;
+  if(w.strat==='angleich'){
+    if(w.central){const c=new Int32Array(L);let n=0;for(let i=0;i<N;i++)if(w.inf[i]){n++;for(let k=0;k<L;k++)c[k]+=w.code[i*L+k];}
+      for(let i=0;i<N;i++)if(w.inf[i])for(let k=0;k<L;k++){const s=2*c[k]-n;if(s)w.code[i*L+k]=s>0?1:0;}}
+    else{const nc=w.code.slice();
+      for(let i=0;i<N;i++){if(!w.inf[i])continue;const nb=NB[i].filter(j=>w.inf[j]);
+        for(let k=0;k<L;k++){let s=w.code[i*L+k]?1:-1;for(const j of nb)s+=w.code[j*L+k]?1:-1;if(s)nc[i*L+k]=s>0?1:0;}}
+      w.code=nc;}
+  }else if(w.strat==='ziel'){
+    for(let i=0;i<N;i++)if(w.inf[i])for(let k=0;k<L;k++)w.code[i*L+k]=w.central?SP.ORIG[k]:w.ziel[i*L+k];
+  }else if(w.strat==='pruef'){
+    for(let i=0;i<N;i++)if(w.inf[i]&&!spHashOk(w,i))w.inf[i]=0;   // kaputte Kopie löscht sich selbst
+  }}
+// Störung: dieselbe Zeile des Bauplans auf x % der befallenen Geräte umdrehen
+function spDisturb(w,frac){
+  const {N,L}=SP,ids=[];for(let i=0;i<N;i++)if(w.inf[i])ids.push(i);
+  for(let a=ids.length-1;a>0;a--){const b=(w.rnd()*(a+1))|0;[ids[a],ids[b]]=[ids[b],ids[a]];}
+  const m=Math.round(frac*ids.length);for(let q=0;q<m;q++){const i=ids[q];for(let k=0;k<8;k++)w.code[i*L+SP.ROW*8+k]^=1;}
+  spMeasure(w);}   // eigener Messpunkt in derselben Runde: die Kurve fällt senkrecht
+function spMeasure(w,replace){
+  const {N,L}=SP;let n=0,ok=0,err=0;const c=new Int32Array(L);
+  for(let i=0;i<N;i++){if(!w.inf[i])continue;n++;let e=0;for(let k=0;k<L;k++){const v=w.code[i*L+k];c[k]+=v;if(v!==SP.ORIG[k])e++;}err+=e;if(!e)ok++;}
+  let cons=0;for(let k=0;k<L;k++)if(n&&((2*c[k]>n?1:0)!==SP.ORIG[k]))cons++;
+  const m={round:w.round,n,ok:n?ok/n:0,err:n?err/n:0,cons};
+  if(replace&&w.hist.length&&w.hist[w.hist.length-1].round===w.round)w.hist[w.hist.length-1]=m;else w.hist.push(m);
+  w.m=m;return m;}
+// CORE-END
+(function(){
+  const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+  const STR=[
+    {k:'keine',t:'Ohne Korrektur',c:'#3987e5',d:()=>'Jede Kopie wird übernommen, wie sie ankommt.',size:()=>'64 Bit'},
+    {k:'angleich',t:'Angleichung',tag:'Video, Labor 2/4',c:'#d95926',
+      d:c=>c?'Jedes Bit nimmt die Mehrheit aller befallenen Geräte an (zentraler Ergebnis-Container).'
+            :'Jedes Bit nimmt die Mehrheit aus dem eigenen Gerät und den befallenen Nachbarn an.',
+      size:c=>c?'64 Bit + Verbindung zur Zentrale':'64 Bit + Abgleich mit bis zu 4 Nachbarn'},
+    {k:'ziel',t:'Regelsystem + Ziel',tag:'Video, Labor 1',c:'#199e70',
+      d:c=>c?'Das Ziel liegt unveränderlich in einer Zentrale. Jede Runde wird der Bauplan darauf zurückgesetzt.'
+            :'Das Ziel reist als zweite Kopie mit und wird genauso kopiert. Jede Runde wird der Bauplan darauf zurückgesetzt.',
+      size:c=>c?'64 Bit + Verbindung zur Zentrale':'128 Bit (Bauplan + Ziel)'},
+    {k:'pruef',t:'Prüfsumme',tag:'Standard',c:'#c98500',
+      d:()=>'Passt die Prüfsumme nach dem Kopieren nicht, wird neu kopiert (bis 3 Versuche). Eine kaputte Spore löscht sich selbst.',
+      size:()=>'96 Bit (Bauplan + Prüfsumme)'}];
+  const fmt=(v,d)=>v.toFixed(d).replace('.',','),pct=v=>Math.round(v*100)+' %';
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  let W=[],seed=7,playing=false,speed=1,events=[],runId=0;
+  const mu=()=>+$('mu').value/1000,frac=()=>+$('df').value/100,central=()=>$('cen').checked;
+
+  // ---------- Bauplan oben ----------
+  (function(){const c=$('bp').getContext('2d');for(let k=0;k<64;k++){c.fillStyle=SP.ORIG[k]?'#dbe5f3':'#1a2333';c.fillRect(k%8,k>>3,1,1);}})();
+
+  // ---------- Felder ----------
+  STR.forEach((s,i)=>{const d=document.createElement('div');d.className='pn';
+    d.innerHTML='<h3><i style="background:'+s.c+'"></i>'+s.t+(s.tag?' <span>· '+s.tag+'</span>':'')+'</h3>'+
+      '<p class="what" id="w'+i+'"></p><canvas id="c'+i+'" role="img" aria-label="Gitter der Geräte: '+s.t+'"></canvas><p class="st" id="s'+i+'"></p>';
+    $('panels').appendChild(d);
+    const l=document.createElement('span');l.innerHTML='<i style="background:'+s.c+'"></i>'+s.t;$('lg').appendChild(l);});
+  function texts(){const c=central();STR.forEach((s,i)=>{$('w'+i).textContent=s.d(c)+' Größe: '+s.size(c)+'.';});}
+  function drawGrid(i){
+    const w=W[i],cv=$('c'+i),cw=(cv.parentElement.clientWidth-28)||300,G=3,b=Math.max(1,Math.floor((cw-(SP.W-1)*G)/(SP.W*8))),cell=8*b,tot=SP.W*cell+(SP.W-1)*G;
+    const dpr=window.devicePixelRatio||1;
+    if(cv.width!==Math.round(tot*dpr)){cv.width=Math.round(tot*dpr);cv.height=Math.round(tot*dpr);cv.style.height=tot+'px';cv.style.width=tot+'px';}
+    const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,tot,tot);
+    for(let d=0;d<SP.N;d++){const X=(d%SP.W)*(cell+G),Y=Math.floor(d/SP.W)*(cell+G);
+      if(!w.inf[d]){x.fillStyle='#0d1320';x.fillRect(X,Y,cell,cell);continue;}
+      for(let k=0;k<64;k++){const v=w.code[d*64+k],o=SP.ORIG[k];
+        x.fillStyle=v===o?(v?'#dbe5f3':'#1a2333'):'#ef4444';x.fillRect(X+(k%8)*b,Y+(k>>3)*b,b,b);}}
+  }
+  function stat(i){const w=W[i],m=w.m,el=$('s'+i);el.textContent='';
+    const add=(t,cls)=>{const s=document.createElement('span');s.textContent=t;if(cls)s.className=cls;el.appendChild(s);};
+    if(!m.n){add('keine Spore mehr');return;}
+    add('befallen '+m.n+'/144 · intakt ');add(pct(m.ok),m.ok>0.995?'ok':m.ok<0.5?'no':'');
+    add(' · Fehler je Spore '+fmt(m.err,2)+' · ');
+    add(m.cons?'Mehrheit weicht in '+m.cons+' Bit ab ✗':'Mehrheit = Original ✓',m.cons?'no':'ok');
+    if(w.strat==='pruef'&&w.copies)add(' · Versuche je Kopie '+fmt(w.tries/w.copies,2));}
+  function drawAll(){W.forEach((w,i)=>{drawGrid(i);stat(i);});$('rnd').textContent='Runde '+W[0].round;chart();}
+
+  // ---------- Ablauf ----------
+  function reset(){W=STR.map(s=>spWorld(s.k,{mu:mu(),seed,central:central()}));events=[];texts();drawAll();}
+  function step(){W.forEach(w=>{w.mu=mu();spStep(w);});drawAll();}
+  function disturb(){const f=frac();W.forEach(w=>spDisturb(w,f));events.push({round:W[0].round,f});drawAll();}
+  const setPlay=()=>{$('play').textContent=playing?'⏸ Pause':'▶ Abspielen';};
+  async function play(){if(playing){playing=false;setPlay();return;}runId++;playing=true;setPlay();
+    while(playing){step();await sleep(speed===1?320:70);}}
+  const stop=()=>{runId++;playing=false;setPlay();document.querySelectorAll('.vs button').forEach(b=>b.classList.remove('on'));};
+
+  // ---------- Verlauf ----------
+  const CW=640,CH=230,ML=40,MR=12,MT=12,MB=26;let view=null;
+  function el(tag,a,p){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+  function chart(){const sv=$('csv');sv.textContent='';
+    const last=W[0].round,x1=Math.max(60,last),x0=0,X=n=>ML+(n-x0)/(x1-x0)*(CW-ML-MR),Y=v=>MT+(1-v)*(CH-MT-MB);view={X,x0,x1};
+    for(let k=0;k<=4;k++){const y=Y(k/4);el('line',{x1:ML,x2:CW-MR,y1:y,y2:y,stroke:k?'#1e293b':'#334155','stroke-width':1},sv);
+      el('text',{x:ML-6,y:y+4,'text-anchor':'end','font-size':11,fill:'#93a4bd'},sv).textContent=(k*25)+' %';}
+    for(let n=0;n<=x1;n+=x1>150?50:20)el('text',{x:X(n),y:CH-8,'text-anchor':n?'middle':'start','font-size':11,fill:'#93a4bd'},sv).textContent=n?String(n):'Runde 0';
+    events.forEach(e=>{const x=X(e.round);el('line',{x1:x,x2:x,y1:MT,y2:CH-MB,stroke:'#facc15','stroke-width':1,'stroke-dasharray':'4 4'},sv);
+      el('text',{x:x+4,y:MT+11,'font-size':11,fill:'#facc15'},sv).textContent='⚡ '+Math.round(e.f*100)+' %';});
+    W.forEach((w,i)=>{let d='';w.hist.forEach((h,j)=>{d+=(j?'L':'M')+X(h.round).toFixed(1)+' '+Y(h.ok).toFixed(1);});
+      el('path',{d,fill:'none',stroke:STR[i].c,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'},sv);});
+    el('line',{id:'hair',x1:0,x2:0,y1:MT,y2:CH-MB,stroke:'#93a4bd','stroke-width':1,visibility:'hidden'},sv);}
+  function hover(ev){if(!view)return;const sv=$('csv'),bb=sv.getBoundingClientRect(),x=(ev.clientX-bb.left)/bb.width*CW;
+    let n=Math.round(view.x0+(x-ML)/(CW-ML-MR)*(view.x1-view.x0));n=Math.max(0,Math.min(W[0].round,n));
+    const hx=view.X(n),h=$('hair');h.setAttribute('x1',hx);h.setAttribute('x2',hx);h.setAttribute('visibility','visible');
+    const tip=$('tip');tip.textContent='';const b=document.createElement('b');b.textContent='Runde '+n;tip.appendChild(b);
+    W.forEach((w,i)=>{let m=null;w.hist.forEach(q=>{if(q.round===n)m=q;});if(!m)return;const d=document.createElement('div');
+      const k=document.createElement('i');k.style.cssText='display:inline-block;width:12px;height:3px;margin-right:6px;vertical-align:middle;background:'+STR[i].c;
+      d.appendChild(k);d.appendChild(document.createTextNode(pct(m.ok)+'  '+STR[i].t));tip.appendChild(d);});
+    tip.style.display='block';const cb=$('chart').getBoundingClientRect(),px=hx/CW*bb.width,tw=tip.offsetWidth;
+    tip.style.left=(bb.left-cb.left+Math.min(Math.max(0,px+10),bb.width-tw))+'px';tip.style.top=(bb.top-cb.top+8)+'px';}
+  function unhover(){$('tip').style.display='none';const h=$('hair');if(h)h.setAttribute('visibility','hidden');}
+
+  // ---------- Versuche ----------
+  const V={
+    A:{cen:false,mu:5,end:100,txt:r=>'Ohne Korrektur zerfällt der Bauplan: nur noch '+r[0]+' intakt. Ein mitreisendes Ziel hilft nicht ('+r[2]+
+      '), weil es genauso falsch kopiert wird. Die Angleichung hält '+r[1]+' (über 20 Zufallsläufe im Schnitt 47 %): besser, aber nicht sauber. '+
+      'Fehler werden beim Weiterkopieren vererbt und sitzen dann in ganzen Nachbarschaften fest, wo sich alle im Fehler einig sind; '+
+      'am Rand, wo weniger Nachbarn mitstimmen, besonders oft. Die Prüfsumme hält '+r[3]+
+      ', dafür braucht sie im Schnitt '+r.v+' Versuche je Kopie.'},
+    B:{cen:false,mu:0,dAt:30,df:30,end:60,txt:r=>'Trifft die Störung weniger als die Hälfte, repariert die Angleichung fast alles: '+r[1]+
+      ' intakt. Das ist die „Selbstreparatur“ aus dem Video. Ein Rest bleibt dort, wo zufällig die Mehrheit einer Nachbarschaft getroffen wurde; '+
+      'da setzt sich die Störung fest. Ohne Korrektur bleiben '+r[0]+'. Ziel und Prüfsumme: '+r[2]+' und '+r[3]+
+      ' (die Störung trifft hier nur den Bauplan, nicht das mitreisende Ziel).'},
+    C:{cen:false,mu:0,dAt:30,df:60,end:60,txt:r=>'Trifft die Störung mehr als die Hälfte, kippt die Angleichung: nur noch '+r[1]+
+      ' intakt, und die Mehrheit hat die gestörte Zeile übernommen ('+r.c1+' Bit). Die Störung ist jetzt die neue „Urfassung“. '+
+      'Ziel ('+r[2]+') und Prüfsumme ('+r[3]+') stellen das Original wieder her, weil sie es gespeichert haben. '+
+      'Beim Ziel gilt das nur, weil die Störung das mitreisende Ziel verschont.'},
+    D:{cen:true,mu:5,dAt:30,df:60,end:70,txt:r=>'Mit Zentrale korrigiert die Angleichung Kopierfehler perfekt. Die 60-%-Störung übernimmt sie aber '+
+      'komplett: '+r[1]+' intakt, denn die Zentrale hält jetzt die Störung für richtig. Das zentral gespeicherte Ziel hält ('+r[2]+
+      '), doch dann steckt die Information in der Zentrale, nicht in der Spore. Die Prüfsumme hält ('+r[3]+') ganz ohne Zentrale.'}};
+  async function versuch(key,btn){
+    stop();const my=runId,v=V[key];btn.classList.add('on');
+    $('mu').value=v.mu;$('cen').checked=v.cen;if(v.df)$('df').value=v.df;seed=7;sliders();reset();
+    $('verdict').textContent='Versuch '+key+' läuft …';
+    while(W[0].round<v.end){if(runId!==my)return;
+      if(v.dAt&&W[0].round===v.dAt&&!events.length){disturb();await sleep(500);continue;}
+      step();await sleep(speed===1?110:30);}
+    if(runId!==my)return;
+    const r=W.map(w=>pct(w.m.ok));r.c1=W[1].m.cons;r.v=W[3].copies?fmt(W[3].tries/W[3].copies,1):'–';
+    const vd=$('verdict');vd.textContent='';const p=document.createElement('div');p.textContent=v.txt(r);vd.appendChild(p);
+    const n=document.createElement('div');n.className='nums';
+    n.textContent='Runde '+W[0].round+' · intakt: '+STR.map((s,i)=>s.t+' '+r[i]).join(' · ');vd.appendChild(n);
+    btn.classList.remove('on');}
+
+  // ---------- Bedienung ----------
+  function sliders(){const m=mu();$('muv').textContent=fmt(m*100,1)+' %';
+    $('muh').textContent=m?'→ '+fmt((1-Math.pow(1-m,64))*100,0)+' % der Kopien haben mindestens einen Fehler im Bauplan.':'→ Kopien sind fehlerfrei.';
+    $('dfv').textContent=$('df').value+' % der Geräte';}
+  $('play').onclick=()=>{document.querySelectorAll('.vs button').forEach(b=>b.classList.remove('on'));play();};
+  $('step').onclick=()=>{stop();step();};
+  $('reset').onclick=()=>{stop();reset();};
+  $('dice').onclick=()=>{stop();seed=(seed*1103515245+12345)>>>0;reset();};
+  $('speed').onclick=()=>{speed=speed===1?4:1;$('speed').textContent='Tempo '+speed+'×';};
+  $('dist').onclick=()=>disturb();
+  $('mu').oninput=sliders;$('df').oninput=sliders;
+  $('cen').onchange=()=>{stop();reset();};
+  document.querySelectorAll('.vs button').forEach(b=>{b.onclick=()=>versuch(b.dataset.v,b);});
+  const sv=$('csv');sv.addEventListener('pointermove',hover);sv.addEventListener('pointerdown',hover);sv.addEventListener('pointerleave',unhover);
+  let rt=0;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>W.forEach((w,i)=>drawGrid(i)),150);});
+  sliders();reset();
+})();
+
+</script>
+</body>
+</html>
