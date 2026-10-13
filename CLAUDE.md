@@ -30,7 +30,13 @@
 | `ausbreitungs_labor_sir.html` | eigene Erweiterung zum Artikel: SEIQ-Modell (Mean-Field) |
 | `netzwerk_labor_cluster.html` | eigene Erweiterung zum Artikel: SEIQ auf geclustertem Graphen |
 
-Video-Labor 3 fehlt, dazu gibt es keinen Screenshot.
+Video-Labor 3 kommt im Video nicht vor (geprüft mit Standbildern alle 5 s und dem Transkript).
+
+Zeitleiste des Videos (aus den Storyboard-Standbildern, `sb0` in der yt-dlp-Info-JSON): 0:00 Artikel ·
+1:14 KI-Spore-Folie · 2:14 Artikel · 3:03 Loop-Diagramm · 4:53 Labor 1 · 5:42 Labor 2 · 6:27 Labor 4 ·
+9:16 Diagramm · 9:46 Artikel · 10:16 Labor 4 (Anomalie 10:43) · 11:30 Artikel · 11:50 Folien · 14:24 Abspann.
+Schlüsselsätze: 5:33 „Urzustand“ · 6:08 „Sinuskurve“ (Labor 2) · 7:11/7:52 „zurückverfolgen“ (Labor 4) ·
+8:32 „feste Verbindungen, also Kontrolle“ · 8:50 „Urfassung … Selbstreparatur“ · 9:30 „Angleichungssystem“.
 
 ## Git-Arbeitsweise
 
