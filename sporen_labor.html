@@ -45,7 +45,10 @@
   .pn .what{font-size:13px;color:#b9c7da;margin:6px 0 10px;min-height:3.9em}
   .pn canvas{width:100%;display:block}
   .pn .st{font-size:12.5px;color:#cdd9ea;margin:8px 0 0;font-variant-numeric:tabular-nums}
-  .pn .st .ok{color:#4ade80}.pn .st .no{color:#f87171}
+  .pn .st .ok,.mj .ok{color:#4ade80}.pn .st .no,.mj .no{color:#f87171}
+  .mj{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12.5px;color:#cdd9ea;line-height:1.4}
+  .mj b{font-weight:600;color:var(--mut)}
+  .pn .mc{width:40px;height:40px;image-rendering:pixelated;border-radius:4px;flex:none;border:1px solid var(--line)}
   .lg{display:flex;gap:6px 16px;font-size:12.5px;color:#cdd9ea;flex-wrap:wrap;margin-bottom:6px}
   .lg i{display:inline-block;width:16px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
   .chart{position:relative}
@@ -111,6 +114,9 @@
   </div>
 
   <div class="panels" id="panels"></div>
+  <p class="hint" style="margin-top:10px"><b>Mehrheitsbild:</b> Für jede der 64 Stellen wird abgestimmt, welchen Wert die Mehrheit der befallenen Geräte dort hat.
+    Das Mehrheitsbild kann exakt der Pilz sein, obwohl keine einzelne Spore mehr fehlerfrei ist, solange die Fehler an verschiedenen Stellen sitzen.
+    Rot heißt: An dieser Stelle hat mehr als die Hälfte der Geräte den falschen Wert.</p>
 
   <div class="card">
     <div class="lg" id="lg"></div>
@@ -258,7 +264,8 @@ function spMeasure(w,replace){
   // ---------- Felder ----------
   STR.forEach((s,i)=>{const d=document.createElement('div');d.className='pn';
     d.innerHTML='<h3><i style="background:'+s.c+'"></i>'+s.t+(s.tag?' <span>· '+s.tag+'</span>':'')+'</h3>'+
-      '<p class="what" id="w'+i+'"></p><canvas id="c'+i+'" role="img" aria-label="Gitter der Geräte: '+s.t+'"></canvas><p class="st" id="s'+i+'"></p>';
+      '<p class="what" id="w'+i+'"></p><canvas id="c'+i+'" role="img" aria-label="Gitter der Geräte: '+s.t+'"></canvas><p class="st" id="s'+i+'"></p>'+
+      '<div class="mj"><canvas class="mc" id="m'+i+'" width="8" height="8" role="img" aria-label="Mehrheitsbild"></canvas><span id="mt'+i+'"></span></div>';
     $('panels').appendChild(d);
     const l=document.createElement('span');l.innerHTML='<i style="background:'+s.c+'"></i>'+s.t;$('lg').appendChild(l);});
   function texts(){const c=central();STR.forEach((s,i)=>{$('w'+i).textContent=s.d(c)+' Größe: '+s.size(c)+'.';});}
@@ -276,10 +283,18 @@ function spMeasure(w,replace){
     const add=(t,cls)=>{const s=document.createElement('span');s.textContent=t;if(cls)s.className=cls;el.appendChild(s);};
     if(!m.n){add('keine Spore mehr');return;}
     add('befallen '+m.n+'/144 · intakt ');add(pct(m.ok),m.ok>0.995?'ok':m.ok<0.5?'no':'');
-    add(' · Fehler je Spore '+fmt(m.err,2)+' · ');
-    add(m.cons?'Mehrheit weicht in '+m.cons+' Bit ab ✗':'Mehrheit = Original ✓',m.cons?'no':'ok');
+    add(' · Fehler je Spore '+fmt(m.err,2));
     if(w.strat==='pruef'&&w.copies)add(' · Versuche je Kopie '+fmt(w.tries/w.copies,2));}
-  function drawAll(){W.forEach((w,i)=>{drawGrid(i);stat(i);});$('rnd').textContent='Runde '+W[0].round;chart();}
+  // Mehrheitsbild: für jede der 64 Stellen der Wert, den mehr als die Hälfte der befallenen Geräte hat (wie in spMeasure)
+  function major(i){const w=W[i],m=w.m,cx=$('m'+i).getContext('2d'),mt=$('mt'+i);mt.textContent='';
+    const c=new Int32Array(64);for(let d=0;d<SP.N;d++)if(w.inf[d])for(let k=0;k<64;k++)c[k]+=w.code[d*64+k];
+    for(let k=0;k<64;k++){const v=m.n&&2*c[k]>m.n?1:0,o=SP.ORIG[k];cx.fillStyle=!m.n?'#0d1320':v===o?(v?'#dbe5f3':'#1a2333'):'#ef4444';cx.fillRect(k%8,k>>3,1,1);}
+    const b=document.createElement('b');b.textContent='Mehrheitsbild aller Geräte';mt.appendChild(b);mt.appendChild(document.createElement('br'));
+    const s=document.createElement('span');
+    if(!m.n)s.textContent='keine Geräte befallen';
+    else{s.textContent=m.cons?'weicht in '+m.cons+' Bit vom Original ab ✗':'= Original ✓';s.className=m.cons?'no':'ok';}
+    mt.appendChild(s);}
+  function drawAll(){W.forEach((w,i)=>{drawGrid(i);stat(i);major(i);});$('rnd').textContent='Runde '+W[0].round;chart();}
 
   // ---------- Ablauf ----------
   function reset(){W=STR.map(s=>spWorld(s.k,{mu:mu(),seed,central:central()}));events=[];texts();drawAll();}
@@ -326,7 +341,7 @@ function spMeasure(w,replace){
       'da setzt sich die Störung fest. Ohne Korrektur bleiben '+r[0]+'. Ziel und Prüfsumme: '+r[2]+' und '+r[3]+
       ' (die Störung trifft hier nur den Bauplan, nicht das mitreisende Ziel).'},
     C:{cen:false,mu:0,dAt:30,df:60,end:60,txt:r=>'Trifft die Störung mehr als die Hälfte, kippt die Angleichung: nur noch '+r[1]+
-      ' intakt, und die Mehrheit hat die gestörte Zeile übernommen ('+r.c1+' Bit). Die Störung ist jetzt die neue „Urfassung“. '+
+      ' intakt, und das Mehrheitsbild hat die gestörte Zeile übernommen ('+r.c1+' Bit falsch). Die Störung ist jetzt die neue „Urfassung“. '+
       'Ziel ('+r[2]+') und Prüfsumme ('+r[3]+') stellen das Original wieder her, weil sie es gespeichert haben. '+
       'Beim Ziel gilt das nur, weil die Störung das mitreisende Ziel verschont.'},
     D:{cen:true,mu:5,dAt:30,df:60,end:70,txt:r=>'Mit Zentrale korrigiert die Angleichung Kopierfehler perfekt. Die 60-%-Störung übernimmt sie aber '+
