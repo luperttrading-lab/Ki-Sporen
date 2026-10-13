@@ -37,14 +37,55 @@
   .foot{color:var(--mut);font-size:13px;margin-top:30px}
   .thesis{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:12px;padding:14px 16px;margin-top:18px;font-size:14px;color:#cdd9ea}
   .thesis b{color:var(--tx)}
+  .diagram{display:block;width:100%;height:auto;margin:6px 0 0;border-radius:14px;font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif}
+  .cap{color:var(--mut);font-size:13px;margin:8px 0 0}
+  .cap a,.tl a{color:var(--acc)}
+  .tl{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tl a{display:inline-flex;gap:6px;align-items:baseline;text-decoration:none;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:#cdd9ea}
+  .tl a b{color:var(--acc);font-variant-numeric:tabular-nums}
+  .tl a.lab-chip{border-color:#1d4ed8;background:#1d4ed8;color:#fff}
+  .tl a.lab-chip b{color:#dbeafe}
   dd a{color:var(--acc)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="kicker">Projekt KI-Sporen</p>
+  <p class="kicker">Projekt KI-Sporen · Nachbau des Videos</p>
   <h1>Alle Labore</h1>
-  <p class="sub">Nachbau der Labore aus dem Video
+  <svg class="diagram" viewBox="0 0 1100 870" role="img" aria-label="Diagramm Parallele rekursive Loops: sieben Loops liefern an einen Ergebnis-Container, dann Regelsystem plus Ziel, dann Variations-Konnektor, der zurück zu den Loops koppelt">
+  <rect width="1100" height="870" rx="18" fill="#000"/>
+  <text x="530" y="47" text-anchor="middle" font-size="27" fill="#e5e7eb">Parallele rekursive Loops</text>
+  <path d="M22 175 V706 H288 M771 706 H1036 V175" fill="none" stroke="#14a38f" stroke-width="5"/>
+  <path d="M12 140 L42 157 L12 174" fill="none" stroke="#9ca3af" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M1046 140 L1016 157 L1046 174" fill="none" stroke="#9ca3af" stroke-width="9" stroke-linejoin="round"/>
+  <rect x="38" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="99.5" cy="157" r="21" fill="#3b82f6"/><rect x="178" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="239.5" cy="157" r="31" fill="#e5636e"/><rect x="318" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="379.5" cy="157" r="40" fill="#3b82f6"/><rect x="459" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="520.5" cy="157" r="21" fill="#e5636e"/><rect x="599" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="660.5" cy="157" r="30" fill="#3b82f6"/><rect x="739" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="800.5" cy="157" r="40" fill="#e5636e"/><rect x="880" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="941.5" cy="157" r="21" fill="#3b82f6"/>
+  <g stroke="#9ca3af" stroke-width="3" fill="none"><path d="M529 252 V296 M519 286 L529 298 L539 286"/><path d="M529 434 V474 M519 464 L529 476 L539 464"/><path d="M529 606 V646 M519 636 L529 648 L539 636"/></g>
+  <rect x="288" y="309" width="483" height="121" rx="16" fill="#1c1626" stroke="#a48fd8" stroke-width="3"/>
+  <text x="529" y="361" text-anchor="middle" font-size="32" font-weight="700" fill="#f3f4f6">Ergebnis-Container</text>
+  <text x="529" y="404" text-anchor="middle" font-size="25" fill="#e5e7eb">Zustände und Verlauf</text>
+  <rect x="288" y="487" width="483" height="115" rx="16" fill="#03191a" stroke="#1f9e8a" stroke-width="3"/>
+  <text x="529" y="558" text-anchor="middle" font-size="32" font-weight="700" fill="#f3f4f6">Regelsystem + Ziel</text>
+  <rect x="288" y="654" width="483" height="106" rx="16" fill="#271c0a" stroke="#d9a441" stroke-width="3"/>
+  <text x="529" y="719" text-anchor="middle" font-size="30" font-weight="700" fill="#f3f4f6">Variations-Konnektor</text>
+  <text x="530" y="845" text-anchor="middle" font-size="29" fill="#e5e7eb">Bewerten → Variieren → erneut durchlaufen</text>
+</svg>
+  <p class="cap">Das Diagramm aus dem Video (<a href="https://youtu.be/M7zLg-YNcyU?t=183" target="_blank" rel="noopener">3:03–4:48</a>), nachgebaut. Nach dieser Schaltung sind die Labore gebaut.</p>
+
+  <h2 style="margin-top:22px">Ablauf im Video</h2>
+  <div class="tl">
+    <a href="https://youtu.be/M7zLg-YNcyU?t=0" target="_blank" rel="noopener"><b>0:00</b>Anthropic-Artikel</a>
+    <a href="https://youtu.be/M7zLg-YNcyU?t=74" target="_blank" rel="noopener"><b>1:14</b>KI-Spore-Folie</a>
+    <a href="https://youtu.be/M7zLg-YNcyU?t=183" target="_blank" rel="noopener"><b>3:03</b>Diagramm</a>
+    <a class="lab-chip" href="nachbau_1_loop_labor.html"><b>4:53</b>Labor 1</a>
+    <a class="lab-chip" href="nachbau_2_ohne_ziel.html"><b>5:42</b>Labor 2</a>
+    <a class="lab-chip" href="nachbau_4_gedaechtnis.html"><b>6:27</b>Labor 4</a>
+    <a href="https://youtu.be/M7zLg-YNcyU?t=570" target="_blank" rel="noopener"><b>9:30</b>„Angleichungssystem“</a>
+    <a href="https://youtu.be/M7zLg-YNcyU?t=643" target="_blank" rel="noopener"><b>10:43</b>Anomalie in Labor 4</a>
+    <a href="https://youtu.be/M7zLg-YNcyU?t=710" target="_blank" rel="noopener"><b>11:50</b>Spore-Folien</a>
+  </div>
+  <p class="cap">Dunkel: springt ins Video an diese Stelle. Blau gefüllt: öffnet den Nachbau.</p>
+
+  <p class="sub" style="margin-top:18px">Nachbau der Labore aus dem Video
   <a href="https://youtu.be/M7zLg-YNcyU" target="_blank" rel="noopener">„KI repliziert sich selbst – Anthropic warnt vor Katastrophe“</a>
   (LPIndie), rekonstruiert aus Screenshots. Dazu zwei eigene Labore zum
   <a href="https://www.anthropic.com/research/self-replicating-ai" target="_blank" rel="noopener">Anthropic-Artikel vom 12.10.2026</a>.
