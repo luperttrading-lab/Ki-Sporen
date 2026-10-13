@@ -48,7 +48,7 @@
   .pn .st .ok,.mj .ok{color:#4ade80}.pn .st .no,.mj .no{color:#f87171}
   .mj{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12.5px;color:#cdd9ea;line-height:1.4}
   .mj b{font-weight:600;color:var(--mut)}
-  .ib{flex:none;width:30px;height:30px;padding:0;border-radius:50%;font-size:16px;line-height:28px;color:var(--acc);background:#16213a;border:1px solid #24324d;margin-left:auto}
+  .ib{flex:none;width:30px;height:30px;padding:0;border-radius:50%;font-size:16px;line-height:28px;color:var(--acc);background:#16213a;border:1px solid #24324d;margin-left:4px}
   dialog#dlg{background:var(--panel);color:var(--tx);border:1px solid #24324d;border-radius:14px;padding:18px 18px 16px;width:calc(100% - 32px);max-width:540px;max-height:86vh;overflow:auto}
   dialog#dlg::backdrop{background:rgba(3,6,12,.72)}
   dialog#dlg h3{margin:0 0 2px;font-size:18px}
@@ -128,9 +128,6 @@
   </div>
 
   <div class="panels" id="panels"></div>
-  <p class="hint" style="margin-top:10px"><b>Mehrheitsbild:</b> Für jede der 64 Stellen wird abgestimmt, welchen Wert die Mehrheit der befallenen Geräte dort hat.
-    Das Mehrheitsbild kann exakt der Pilz sein, obwohl keine einzelne Spore mehr fehlerfrei ist, solange die Fehler an verschiedenen Stellen sitzen.
-    Rot heißt: An dieser Stelle hat mehr als die Hälfte der Geräte den falschen Wert.</p>
 
   <div class="card">
     <div class="lg" id="lg"></div>
@@ -185,17 +182,18 @@
   </ul></div>
 </div>
 <dialog id="dlg" aria-labelledby="dTitle">
-  <h3 id="dTitle" tabindex="-1" autofocus style="outline:none">Was ist das Mehrheitsbild?</h3>
+  <h3 id="dTitle" tabindex="-1" autofocus style="outline:none">Mehrheitsbild: was heißt das?</h3>
   <p class="dsub" id="dFeld"></p>
   <ol>
-    <li><b>Abstimmung pro Pixel.</b> Für jede der 64 Stellen des Bauplans wird gezählt, welchen Wert die befallenen Geräte dort
-      haben, hell oder dunkel. Der Wert mit der Mehrheit kommt ins Mehrheitsbild.</li>
-    <li><b>Das ist ein gerundeter Durchschnitt.</b> Hell = 1, dunkel = 0. Liegt der Durchschnitt an einer Stelle über 0,5, wird sie
-      hell, sonst dunkel (bei genau 0,5 also dunkel). Die Labore im Video mitteln Zahlen; bei Bits ist das genau diese Abstimmung.</li>
-    <li><b>Warum das Bild stimmt, obwohl keine Spore heil ist.</b> Kopierfehler treffen meist verschiedene Stellen. An jeder einzelnen
-      Stelle liegt dann nur ein kleiner Teil der Geräte falsch, und die Mehrheit hat recht. Die Fehler mitteln sich heraus.</li>
-    <li><b>Wann es kippt.</b> Liegt an einer Stelle mehr als die Hälfte der Geräte falsch, gewinnt der Fehler die Abstimmung, und die
-      Stelle wird im Mehrheitsbild rot. Das passiert, wenn eine Störung mehr als die Hälfte trifft (Versuch C).</li>
+    <li><b>Abstimmung pro Pixel.</b> Für jede der 64 Stellen zählt, welchen Wert die meisten befallenen Geräte dort haben:
+      hell oder dunkel. Dieser Wert kommt ins Mehrheitsbild.</li>
+    <li><b>Dasselbe wie ein gerundeter Durchschnitt.</b> Hell = 1, dunkel = 0. Beispiel: 8 von 10 Geräten sind an einer Stelle
+      hell, der Durchschnitt ist 0,8, also wird die Stelle hell. Bei genau 0,5 gilt dunkel.</li>
+    <li><b>Die Fehler mitteln sich heraus.</b> Sitzen die Kopierfehler an verschiedenen Stellen, liegt an jeder Stelle nur ein
+      kleiner Teil der Geräte falsch. Dann ist das Mehrheitsbild der Pilz, auch wenn keine einzelne Spore mehr heil ist.</li>
+    <li><b>Wann es kippt.</b> Liegt an einer Stelle mehr als die Hälfte der Geräte falsch, gewinnt der Fehler, und die Stelle wird
+      rot. Das passiert, wenn eine Störung mehr als die Hälfte trifft (Versuch C), oder wenn sich ohne Korrektur über sehr viele
+      Kopien so viele Fehler ansammeln, dass an einer Stelle die Hälfte erreicht ist. Bei 2 % Fehlerrate passiert das nach 100 Runden in 12 von 20 Zufallsläufen.</li>
   </ol>
   <div class="dnow"><b>Jetzt in diesem Feld</b>
     <p id="dCalc"></p>
@@ -203,8 +201,8 @@
     <p class="hlg">Zahl in jedem Feld: Prozent der Geräte, die an dieser Stelle falsch liegen. Je röter, desto näher an 50 %; ab über 50 %
       kippt die Stelle. Hell umrandet: die hellen Pixel des Pilzes.</p>
   </div>
-  <p class="dnote">Die Angleichung mit Zentrale setzt alle Geräte auf genau dieses Mehrheitsbild. Die Angleichung mit Nachbarn stimmt
-    nur mit bis zu 4 Nachbarn ab. Dort kann die Mehrheit falsch liegen, obwohl das Gesamtbild stimmt.</p>
+  <p class="dnote"><b>Wozu das gehört:</b> Die Angleichung mit Zentrale setzt alle Geräte auf genau dieses Mehrheitsbild. Die
+    Angleichung mit Nachbarn stimmt nur mit bis zu 4 Nachbarn ab; dort kann die Mehrheit falsch liegen, obwohl das Gesamtbild stimmt.</p>
   <button id="dClose" class="pri">Schließen</button>
 </dialog>
 <script>
@@ -421,12 +419,13 @@ function spMeasure(w,replace){
     let tot=0,mx=0,mk=0;for(let k=0;k<64;k++){tot+=wrong[k];if(wrong[k]>mx){mx=wrong[k];mk=k;}}
     const cl=$('dCalc');
     if(!n){cl.textContent='In diesem Feld ist gerade kein Gerät befallen.';}
+    else if(!tot){cl.textContent=n+' befallene Geräte, alle fehlerfrei. An jeder Stelle stimmen alle gleich ab, also ist das Mehrheitsbild der Pilz.';}
     else{const avg=tot/64,half=n/2;
       let s=n+' befallene Geräte mit im Schnitt '+fmt(m.err,2)+' falschen Pixeln, zusammen '+tot+' falsche Pixel. '+
         'Verteilt auf 64 Stellen sind das im Schnitt '+fmt(avg,1)+' falsche Geräte pro Stelle ('+fmt(avg/n*100,1)+' %). ';
       s+=mx?'Am schlechtesten steht Zeile '+((mk>>3)+1)+', Spalte '+((mk%8)+1)+' mit '+mx+' von '+n+' Geräten ('+Math.round(mx/n*100)+' %). '
            :'Keine Stelle hat einen Fehler. ';
-      s+='Kippen würde eine Stelle erst, wenn mehr als die Hälfte falsch liegt, also ab '+(Math.floor(half)+1)+' von '+n+' Geräten'+
+      s+='Kippen würde eine Stelle erst ab '+(Math.floor(half)+1)+' von '+n+' Geräten'+
         (n%2?'. ':' (bei genau '+half+' gilt die Gleichstand-Regel aus Punkt 2). ');
       s+=m.cons?m.cons+(m.cons===1?' Stelle ist':' Stellen sind')+' gekippt; im Mehrheitsbild sind sie rot.':'Keine Stelle ist gekippt, also ist das Mehrheitsbild der Pilz.';
       cl.textContent=s;}
