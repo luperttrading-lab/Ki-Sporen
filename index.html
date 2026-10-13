@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KI-Sporen Labore</title>
+<style>
+  :root{--bg:#0a0e17;--panel:#111726;--panel2:#0d1320;--line:#1e293b;--tx:#e5edf7;--mut:#93a4bd;--acc:#60a5fa;--tq:#2dd4bf;--vi:#a78bfa}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:32px 16px 64px}
+  .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:var(--acc);margin:0 0 10px}
+  h1{font-size:30px;line-height:1.15;margin:0 0 10px;font-weight:800}
+  .sub{color:var(--mut);margin:0 0 6px}
+  .sub a{color:var(--acc)}
+  h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:34px 0 12px}
+  .lab{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
+  .top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .num{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-weight:800;background:#16213a;color:var(--acc)}
+  .lab.own .num{color:var(--tq)}
+  .name{flex:1;min-width:180px}
+  .name b{display:block;font-size:17px}
+  .name span{color:var(--mut);font-size:14px}
+  a.go{flex:none;background:var(--acc);color:#071020;text-decoration:none;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px}
+  .lab.own a.go{background:var(--tq)}
+  a.go:hover{filter:brightness(1.1)}
+  details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  summary{cursor:pointer;color:var(--acc);font-weight:600;font-size:14px;list-style:none;display:inline-flex;align-items:center;gap:6px;padding:4px 0}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"ⓘ";font-size:16px}
+  details[open] summary{color:var(--tx)}
+  dl{margin:10px 0 2px;display:grid;grid-template-columns:130px 1fr;gap:6px 14px;font-size:14px}
+  dt{color:var(--mut)}
+  dd{margin:0;color:#cdd9ea}
+  @media(max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:6px}}
+  .missing{color:var(--mut);font-size:14px;border:1px dashed var(--line);border-radius:14px;padding:14px 18px}
+  .foot{color:var(--mut);font-size:13px;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">Projekt KI-Sporen</p>
+  <h1>Alle Labore</h1>
+  <p class="sub">Nachbau der Labore aus dem Video
+  <a href="https://youtu.be/M7zLg-YNcyU" target="_blank" rel="noopener">„KI repliziert sich selbst – Anthropic warnt vor Katastrophe“</a>
+  (LPIndie), rekonstruiert aus Screenshots. Dazu zwei eigene Labore zum
+  <a href="https://www.anthropic.com/research/self-replicating-ai" target="_blank" rel="noopener">Anthropic-Artikel vom 12.10.2026</a>.
+  Tippe auf ⓘ, um zu sehen, was ein Labor macht.</p>
+
+  <h2>Nachbau der Video-Labore</h2>
+
+  <div class="lab">
+    <div class="top"><div class="num">1</div>
+      <div class="name"><b>Loop-Labor — mit Ziel</b><span>1.000 Loops, Konnektor, vorgegebenes Ziel</span></div>
+      <a class="go" href="nachbau_1_loop_labor.html">Starten</a></div>
+    <details><summary>Was macht das Labor?</summary><dl>
+      <dt>Was passiert</dt><dd>Jeder Loop hat Rot-Anteil, Blau-Anteil und Größe. Der „Konnektor“ wählt die Loops aus, die dem Ziel (Violett, Größe 72 %) am nächsten sind, kombiniert sie neu und verändert sie leicht. Fachlich ist das ein genetischer Algorithmus.</dd>
+      <dt>Was du siehst</dt><dd>Die Kreise werden violett und ähnlich groß, der Fehler fällt von 0,3 auf unter 0,01.</dd>
+      <dt>Ausprobieren</dt><dd>„Zielfarbe“ verschieben: Die Loops folgen jedem Ziel. „Zielgröße“ auf 0,60 stellen: Der beste Loop wird viel besser als bei 0,72.</dd>
+      <dt>Kernaussage</dt><dd>Optimierung auf ein Ziel, das man vorher einbaut. Keine Emergenz. Der Start ist exakt der aus dem Video.</dd>
+    </dl></details>
+  </div>
+
+  <div class="lab">
+    <div class="top"><div class="num">2</div>
+      <div class="name"><b>Ohne vorgegebenes Ziel</b><span>Nachbar-Mischung auf einem Ring</span></div>
+      <a class="go" href="nachbau_2_ohne_ziel.html">Starten</a></div>
+    <details><summary>Was macht das Labor?</summary><dl>
+      <dt>Was passiert</dt><dd>Jeder Loop mischt seine Farbe mit seinen zwei Nachbarn (82 % eigen, je 9 % links und rechts). Die Größe springt chaotisch. Links ohne, rechts mit Konnektor.</dd>
+      <dt>Was du siehst</dt><dd>Rechts wird alles violett, links bleibt alles bunt. Die gestrichelte Linie ist die Vorhersage aus der Mathematik und liegt genau auf der gemessenen Kurve.</dd>
+      <dt>Ausprobieren</dt><dd>„Rot-Anteil am Start“ auf 0,30 stellen: Am Ende wird alles blauviolett. Die Endfarbe ist immer der Durchschnitt der Startfarben.</dd>
+      <dt>Kernaussage</dt><dd>Das ist Glättung wie ein gleitender Durchschnitt. Das „Ergebnis“ steckt schon im Start.</dd>
+    </dl></details>
+  </div>
+
+  <div class="missing"><b>Labor 3</b> fehlt. Dazu gibt es keinen Screenshot.</div>
+  <div style="height:12px"></div>
+
+  <div class="lab">
+    <div class="top"><div class="num">4</div>
+      <div class="name"><b>Strukturelles Gedächtnis</b><span>Netz mit Verbindungen, Störungstest</span></div>
+      <a class="go" href="nachbau_4_gedaechtnis.html">Starten</a></div>
+    <details><summary>Was macht das Labor?</summary><dl>
+      <dt>Was passiert</dt><dd>Loops sind über Verbindungen vernetzt. Ähnliche verbinden sich, unähnliche Verbindungen reißen. Eine Störung kappt 30 % der Verbindungen und würfelt 30 % der Loops neu. Frage: Kommen dieselben Verbindungen zurück?</dd>
+      <dt>Was du siehst</dt><dd>Die violette Linie (Kantenähnlichkeit) im Vergleich zur gestrichelten Linie (was reiner Zufall ergeben würde).</dd>
+      <dt>Ausprobieren</dt><dd>Rechts unten „Versuch A“, „B“ und „C“ antippen. A ist der Versuch wie im Video.</dd>
+      <dt>Kernaussage</dt><dd>So wie im Video gibt es kein Gedächtnis, die Ähnlichkeit kommt von Verbindungen, die nie gekappt wurden. Echtes Wiederfinden gibt es nur in Versuch C, und dann steckt es in den Farben der Nachbarn, nicht in den Verbindungen.</dd>
+    </dl></details>
+  </div>
+
+  <h2>Eigene Labore zum Artikel</h2>
+
+  <div class="lab own">
+    <div class="top"><div class="num">A</div>
+      <div class="name"><b>Ausbreitungs-Labor</b><span>Wie schnell sich ein KI-Wurm über Geräte verbreitet</span></div>
+      <a class="go" href="ausbreitungs_labor_sir.html">Starten</a></div>
+    <details><summary>Was macht das Labor?</summary><dl>
+      <dt>Was passiert</dt><dd>Epidemie-Modell mit vier Gruppen: anfällig, infiltriert, infektiös, in Quarantäne. Die Werte stammen aus dem Artikel: Einrichtungszeit 28–51 h, Bereinigung wie bei Mirai (92 % mit, 74 % ohne Benachrichtigung in 14 Tagen).</dd>
+      <dt>Was du siehst</dt><dd>Die Ausbreitungswelle über 200 Tage, dazu R₀, Spitzenwert und Rechenleistung in H100-Äquivalenten.</dd>
+      <dt>Ausprobieren</dt><dd>Zwischen „mit Benachrichtigung“ und „ohne“ umschalten: R₀ halbiert sich fast.</dd>
+      <dt>Kernaussage</dt><dd>Schnelle Erkennung und Quarantäne sind der wichtigste Hebel der Abwehr.</dd>
+    </dl></details>
+  </div>
+
+  <div class="lab own">
+    <div class="top"><div class="num">B</div>
+      <div class="name"><b>Netzwerk-Labor</b><span>Dieselbe Ausbreitung auf getrennten Teilnetzen</span></div>
+      <a class="go" href="netzwerk_labor_cluster.html">Starten</a></div>
+    <details><summary>Was macht das Labor?</summary><dl>
+      <dt>Was passiert</dt><dd>Die Geräte bilden 24 Gruppen (Teilnetze). Der Regler „Kopplung“ bestimmt, wie viele Verbindungen zwischen den Gruppen bestehen.</dd>
+      <dt>Was du siehst</dt><dd>Die Ansteckung läuft durch den Graphen. Die rote Kurve (Netzwerk) im Vergleich zur grauen (perfekte Durchmischung).</dd>
+      <dt>Ausprobieren</dt><dd>„Start“ drücken, dann die Kopplung auf 0,02 stellen: Der Wurm bleibt in seiner Startgruppe.</dd>
+      <dt>Kernaussage</dt><dd>Getrennte Netze bremsen die Ausbreitung oder stoppen sie ganz.</dd>
+    </dl></details>
+  </div>
+
+  <p class="foot">Alles rechnet lokal im Browser, ohne Server. Rekonstruiert aus Screenshots: Was genau im Video
+  gesagt wird, ist nicht berücksichtigt.</p>
+</div>
+</body>
+</html>
