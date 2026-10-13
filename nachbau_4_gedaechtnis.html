@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nachbau Gedächtnis-Labor</title>
+<style>
+  :root{--bg:#0a0e17;--panel:#111726;--panel2:#0d1320;--line:#1e293b;--tx:#e5edf7;--mut:#93a4bd;--mut2:#64748b;
+    --acc:#60a5fa;--red:#ef4444;--tq:#2dd4bf;--or:#f59e0b;--vi:#a78bfa;--ok:#34d399;--warn:#fbbf24}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px}
+  .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:var(--acc);margin:0 0 10px}
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px;font-weight:800}
+  .sub{color:var(--mut);margin:0;max-width:80ch}
+  .bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:20px}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h2{font-size:14px;margin:0 0 12px;font-weight:700}
+  canvas{width:100%;display:block;border-radius:8px;background:#070b12}
+  button{background:#16213a;color:var(--tx);border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer}
+  button.primary{background:var(--acc);color:#071020;border-color:var(--acc)}
+  button.danger{background:#7f1d1d;border-color:#b91c1c}
+  button:hover{filter:brightness(1.12)}
+  select{background:#16213a;color:var(--tx);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px}
+  input[type=range]{accent-color:var(--acc)}
+  .lbl{font-size:12px;color:var(--mut)}
+  .pill{font-size:12px;font-weight:700;background:#0c1d2e;border:1px solid #1e3a5f;color:var(--acc);border-radius:999px;padding:4px 10px;font-variant-numeric:tabular-nums}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .stat .k{font-size:11px;color:var(--mut);margin-bottom:3px}
+  .stat .v{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat.hl{border-color:#4c1d95;background:#140f26}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:12px;color:var(--mut)}
+  .legend b{display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle}
+  .verdict{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px;background:var(--panel2);border:1px solid var(--line);color:#cdd9ea}
+  ol.find{margin:0;padding-left:20px}
+  ol.find li{margin-bottom:12px;color:#cdd9ea}
+  ol.find li b{color:var(--tx)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:1px}
+  .t-sicher{color:var(--ok);background:#0b2219;border:1px solid #14532d}
+  .t-wahr{color:var(--warn);background:#251c08;border:1px solid #713f12}
+  .t-verm{color:var(--vi);background:#1a1430;border:1px solid #4c1d95}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  td,th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-weight:600}
+  .note{color:var(--mut);font-size:13px;margin:12px 0 0}
+  .exp button{margin:0 6px 6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">Nachbau · Video-Labor 4 · Störungstest</p>
+  <h1>Entsteht strukturelles Gedächtnis?</h1>
+  <p class="sub">Nachbau des Video-Labors. 1.000 Zustände mischen sich entlang veränderlicher Verbindungen.
+  Unähnliche Verbindungen schwächen sich ab und reißen, neue entstehen zwischen ähnlichen Zuständen
+  (höchstens 3.200). Eine Störung kappt 30 % der Kanten und würfelt 30 % der Kreise neu. Danach die Frage
+  aus dem Video: Kommen <i>dieselben</i> Kanten zurück? Neu gegenüber dem Video ist die Zufallserwartung als
+  Vergleichsmaßstab.</p>
+
+  <div class="bar">
+    <button class="primary" id="run">▶ Start</button>
+    <button id="one">1 Generation</button>
+    <button id="hund">+100 Generationen</button>
+    <button id="restart">↻ Neustart</button>
+    <button class="danger" id="dist">⚡ Störung auslösen</button>
+    <span class="lbl" style="margin-left:6px">Kandidaten</span>
+    <select id="mode"><option value="global">global (wie im Video beschrieben)</option><option value="raeumlich">räumlich (nur Gitternachbarn)</option></select>
+    <span class="lbl">Ähnlichkeit ε</span><input type="range" id="eps" min="0.05" max="0.4" step="0.01" value="0.25" style="width:90px"><span class="pill" id="vEps"></span>
+    <span class="lbl">Tempo</span><input type="range" id="tempo" min="1" max="20" step="1" value="4" style="width:80px">
+    <span class="pill" id="genPill">Generation 0</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Farbzustände der 1.000 Loops <span id="phase" style="color:var(--acc);font-weight:600">· vor Störung</span></h2>
+      <canvas id="dots" height="330"></canvas>
+      <p class="note">Farbe: Mischung aus Blau und Rot. Größe: zweiter Zustandswert. Dünne Linien zeigen eine Stichprobe der
+      aktiven Verbindungen. Im globalen Modus ist die Anordnung nur Darstellung, im räumlichen Modus bestimmt sie, wer sich verbinden darf.</p>
+      <h2 style="margin-top:16px">Verlauf der Messwerte</h2>
+      <canvas id="chart" height="230"></canvas>
+      <div class="legend">
+        <span><b style="background:var(--tq)"></b>Kanten / 3.200</span>
+        <span><b style="background:var(--or)"></b>Farb-Streuung × 2</span>
+        <span><b style="background:var(--vi)"></b>Kantenähnlichkeit J</span>
+        <span><b style="background:repeating-linear-gradient(90deg,var(--vi) 0 4px,transparent 4px 7px)"></b>J bei reinem Zufall</span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Live-Messungen</h2>
+      <div class="stats">
+        <div class="stat"><div class="k">Generation</div><div class="v" id="sGen"></div></div>
+        <div class="stat"><div class="k">Aktive Verbindungen</div><div class="v" id="sEdges"></div></div>
+        <div class="stat"><div class="k">Farb-Streuung</div><div class="v" id="sSpread"></div></div>
+        <div class="stat"><div class="k">Kantenähnlichkeit J (Jaccard)</div><div class="v" id="sJ"></div></div>
+        <div class="stat"><div class="k">Mittlere Größenänderung</div><div class="v" id="sDs"></div></div>
+        <div class="stat"><div class="k">Anzahl Farbgruppen*</div><div class="v" id="sGroups"></div></div>
+      </div>
+      <h2 style="margin-top:16px">Gegenprobe: Gedächtnis oder Zufall?</h2>
+      <div class="stats">
+        <div class="stat hl"><div class="k">J bei reinem Zufall</div><div class="v" id="sJn"></div></div>
+        <div class="stat hl"><div class="k">überlebt (nie gekappt)</div><div class="v" id="sPers"></div></div>
+        <div class="stat hl"><div class="k">zurückgekehrt</div><div class="v" id="sRet"></div></div>
+        <div class="stat hl"><div class="k">Zufallserwartung dafür</div><div class="v" id="sExp"></div></div>
+      </div>
+      <div class="verdict" id="verdict">Noch keine Störung. Erst die Struktur entwickeln lassen, dann „Störung auslösen“.</div>
+      <p class="note">*Farbgruppen = Anzahl besetzter Abschnitte aus zehn gleich breiten Farbbereichen (wie im Video).
+      Liegt der Konsens nahe an einer Abschnittsgrenze, springt der Wert zwischen 1 und 2.</p>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Was hier wirklich passiert</h2>
+      <ol class="find">
+        <li><b>Die Kantenähnlichkeit J misst vor allem, was die Störung überlebt hat.</b> <span class="tag t-sicher">Sicher</span><br>
+        70 % der Kanten werden gar nicht gekappt. Bleiben sie stehen und kommt nichts zurück, ist
+        J = 0,7·3.200 / (3.200 + 0,3·3.200) ≈ <b>0,54</b>. Genau dort landet der globale Modus, und die gestrichelte
+        Zufallslinie liegt deckungsgleich darauf.</li>
+        <li><b>Im globalen Modus gibt es kein Kanten-Gedächtnis.</b> <span class="tag t-sicher">Sicher</span><br>
+        Ein gestörter Knoten ist nach der Erholung ähnlich zu Hunderten anderen. Dass er wieder genau seinen alten
+        Partner aus rund 500.000 möglichen Paaren findet, passiert nur mit Zufallsrate. Im Test kamen 2 Kanten zurück,
+        erwartet waren 1,9.</li>
+        <li><b>Im räumlichen Modus ist J hoch, aber aus Geometrie.</b> <span class="tag t-sicher">Sicher</span><br>
+        Es gibt nur 3.807 Nachbarpaare, 3.200 davon dürfen belegt sein (84 %). Dann trifft schon der Zufall die alten
+        Kanten oft: J ≈ 0,80 bei einer Zufallslinie von ≈ 0,79.</li>
+        <li><b>Echtes Wiederfinden gibt es nur räumlich und mit mehreren Farbgruppen.</b> <span class="tag t-wahr">Wahrscheinlich</span><br>
+        Bei ε = 0,10 bleiben Farbgruppen bestehen. Dann kommen etwa doppelt so viele Kanten zurück, wie der Zufall erwarten lässt.
+        Das Gedächtnis steckt dabei aber nicht in den Kanten, sondern in den ungestörten 70 % der Knoten: Deren Farben
+        ziehen die gestörten Nachbarn zurück, und die Kanten folgen den Farben.</li>
+        <li><b>Der Versuch im Video lief in den erstarrten Zustand.</b> <span class="tag t-verm">Vermutung</span><br>
+        Bei Generation 630 zeigt das Video eine Farbgruppe und Streuung 0,0049, also Konsens. Dann ist jede Kante so gut wie
+        jede andere, und „Gedächtnis“ ist gar nicht mehr messbar. Das Video empfiehlt selbst 150–300 Generationen.</li>
+      </ol>
+    </div>
+    <div class="card exp">
+      <h2>Drei Versuche zum Durchklicken</h2>
+      <p class="note" style="margin-top:0">Jeder Knopf stellt den Versuch ein, rechnet bis zur Störung, löst sie aus und rechnet 300 Generationen weiter.</p>
+      <p style="margin:12px 0 4px;font-size:13px"><b>A · wie im Video</b>: global, ε = 0,25, Störung bei Gen 630</p>
+      <button data-exp="global,0.25,630">Versuch A</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>B · Geometrie</b>: räumlich, ε = 0,25, Störung bei Gen 630</p>
+      <button data-exp="raeumlich,0.25,630">Versuch B</button>
+      <p style="margin:10px 0 4px;font-size:13px"><b>C · echtes Wiederfinden</b>: räumlich, ε = 0,10, Störung bei Gen 630</p>
+      <button data-exp="raeumlich,0.10,630">Versuch C</button>
+      <p class="note">Achte auf die violette Linie gegen die gestrichelte: Nur wenn J deutlich darüber liegt, kommen mehr
+      alte Kanten zurück als durch Zufall.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2>Rekonstruiert oder angenommen?</h2>
+    <table>
+      <tr><th>Baustein</th><th>Wert</th><th>Herkunft</th></tr>
+      <tr><td>Störung, Referenz, Jaccard, Farbgruppen</td><td>30 % Kanten / 30 % Kreise, Kantenmenge davor als Referenz</td><td>steht im Video</td></tr>
+      <tr><td>Start / Obergrenze</td><td>2.931 Kanten zufällig, höchstens 3.200</td><td>Zahlen aus dem Video</td></tr>
+      <tr><td>Mischen</td><td>5 % Richtung gewichtetes Nachbarmittel, Rauschen σ = 0,0013 (Farbe) / 0,02 (Größe)</td><td>Annahme, abgestimmt auf Video-Werte bei Gen 630 (Streuung 0,0049, Größenänderung 0,017)</td></tr>
+      <tr><td>Kantenregel</td><td>Gewicht + 0,05·(1 − d/1,2ε), Kappen unter 0,05; neue Kante wenn d &lt; ε; isolierte Knoten dürfen die schwächste Kante verdrängen</td><td>Annahme, im Video nur in Worten beschrieben</td></tr>
+      <tr><td>Kandidatenmenge</td><td>global oder räumlich umschaltbar</td><td>offen; das Video sagt „Platzierung nur zur Visualisierung“, also eher global</td></tr>
+      <tr><td>Zufallserwartung</td><td>jede neue Kante als zufälliges freies Kandidatenpaar</td><td>neu, nicht im Video</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+// CORE-START
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function makeGauss(rnd){let spare=null;return function(){if(spare!==null){const v=spare;spare=null;return v;}
+  let u=0,v=0;while(!u)u=rnd();v=rnd();const r=Math.sqrt(-2*Math.log(u));spare=r*Math.sin(6.283185307*v);return r*Math.cos(6.283185307*v);};}
+
+function makeMemorySim(opt){
+  const N=1000, COLS=40, ROWS=25, MAXE=3200, INIT=2931, ALPHA=0.05, SC=0.0013, SS=0.02, TRIES=300;
+  const eps=opt.eps, tw=1.2*opt.eps, spatial=opt.mode==='raeumlich';
+  const rnd=mulberry32(opt.seed), gauss=makeGauss(rnd);
+  const c=new Float64Array(N), s=new Float64Array(N);
+  for(let i=0;i<N;i++){c[i]=rnd();s[i]=rnd();}
+  const nbM=Array.from({length:N},()=>[]); let moorePairs=0;
+  for(let i=0;i<N;i++){const x=i%COLS,y=(i/COLS)|0;
+    for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){if(!dx&&!dy)continue;
+      const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=COLS||Y>=ROWS)continue;const j=Y*COLS+X;nbM[i].push(j);if(j>i)moorePairs++;}}
+  const pool=spatial?moorePairs:N*(N-1)/2;
+  const key=(i,j)=>i<j?i*1024+j:j*1024+i;
+  const E=new Map(), deg=new Int32Array(N);
+  const addEdge=(k,w)=>{E.set(k,w);deg[k>>10]++;deg[k&1023]++;};
+  const delEdge=k=>{E.delete(k);deg[k>>10]--;deg[k&1023]--;};
+  const partner=i=>spatial?nbM[i][(rnd()*nbM[i].length)|0]:(rnd()*N)|0;
+  const cand=()=>{const i=(rnd()*N)|0,j=partner(i);return i===j?-1:key(i,j);};
+  while(E.size<INIT){const k=cand();if(k>=0&&!E.has(k))addEdge(k,0.5);}
+  let gen=0, ref=null, everAbsent=null, expRet=0, distGen=-1, lastDs=0;
+
+  function removeWeakest(){let mk=-1,mw=2;for(const [k,w] of E){if(w<mw){mw=w;mk=k;}}if(mk>=0)delEdge(mk);}
+
+  function step(){
+    const ac=new Float64Array(N), as=new Float64Array(N), aw=new Float64Array(N);
+    for(const [k,w] of E){const i=k>>10,j=k&1023;ac[i]+=w*c[j];ac[j]+=w*c[i];as[i]+=w*s[j];as[j]+=w*s[i];aw[i]+=w;aw[j]+=w;}
+    let ds=0;
+    for(let i=0;i<N;i++){let cn=c[i],sn=s[i];
+      if(aw[i]>0){cn+=ALPHA*(ac[i]/aw[i]-c[i]);sn+=ALPHA*(as[i]/aw[i]-s[i]);}
+      cn+=gauss()*SC;sn+=gauss()*SS;
+      cn=cn<0?0:cn>1?1:cn;sn=sn<0?0:sn>1?1:sn;ds+=Math.abs(sn-s[i]);c[i]=cn;s[i]=sn;}
+    lastDs=ds/N;
+    for(const [k,w] of E){const d=Math.abs(c[k>>10]-c[k&1023]);const w2=Math.min(1,w+0.05*(1-d/tw));
+      if(w2<0.05)delEdge(k);else E.set(k,w2);}
+    let absentRef=0;if(ref){let p=0;for(const k of ref)if(E.has(k))p++;absentRef=ref.size-p;}
+    const iso=[];for(let i=0;i<N;i++)if(deg[i]===0)iso.push(i);
+    for(let t=0;t<TRIES;t++){
+      let k;
+      if(iso.length&&rnd()<0.5){const i=iso[(rnd()*iso.length)|0],j=partner(i);k=i===j?-1:key(i,j);}else k=cand();
+      if(k<0||E.has(k))continue;
+      const i=k>>10,j=k&1023;if(Math.abs(c[i]-c[j])>=eps)continue;
+      if(E.size>=MAXE){if(deg[i]===0||deg[j]===0)removeWeakest();else continue;}
+      if(ref){expRet+=absentRef/Math.max(1,pool-E.size);if(ref.has(k))absentRef--;}
+      addEdge(k,0.3);
+    }
+    if(ref)for(const k of ref)if(!E.has(k))everAbsent.add(k);
+    gen++;
+  }
+
+  function disturb(){
+    ref=new Set(E.keys());everAbsent=new Set();expRet=0;distGen=gen;
+    const keys=[...E.keys()];for(let i=keys.length-1;i>0;i--){const j=(rnd()*(i+1))|0;[keys[i],keys[j]]=[keys[j],keys[i]];}
+    const cut=Math.round(0.3*keys.length);for(let q=0;q<cut;q++){delEdge(keys[q]);everAbsent.add(keys[q]);}
+    const idx=Array.from({length:N},(_,i)=>i);for(let i=N-1;i>0;i--){const j=(rnd()*(i+1))|0;[idx[i],idx[j]]=[idx[j],idx[i]];}
+    for(let q=0;q<0.3*N;q++){c[idx[q]]=rnd();s[idx[q]]=rnd();}
+  }
+
+  function metrics(){
+    let m=0;for(let i=0;i<N;i++)m+=c[i];m/=N;let v=0;for(let i=0;i<N;i++)v+=(c[i]-m)**2;
+    const bins=new Uint8Array(10);for(let i=0;i<N;i++)bins[Math.min(9,(c[i]*10)|0)]=1;
+    let groups=0;for(let b=0;b<10;b++)groups+=bins[b];
+    const out={gen,edges:E.size,maxEdges:MAXE,spread:Math.sqrt(v/N),groups,ds:lastDs,distGen,J:null,Jnull:null,returned:0,persisted:0,expRet:0};
+    if(ref){let inter=0,ret=0;for(const k of ref)if(E.has(k)){inter++;if(everAbsent.has(k))ret++;}
+      const pers=inter-ret;out.J=inter/(E.size+ref.size-inter);
+      out.Jnull=(pers+expRet)/(E.size+ref.size-pers-expRet);out.returned=ret;out.persisted=pers;out.expRet=expRet;}
+    return out;
+  }
+  return {step,disturb,metrics,c,s,E,N,COLS,ROWS,get gen(){return gen;},get ref(){return ref;}};
+}
+// CORE-END
+
+(function(){
+  const $=id=>document.getElementById(id);
+  const css=getComputedStyle(document.documentElement),C=n=>css.getPropertyValue(n).trim();
+  let opt={mode:'global',eps:0.25,seed:7},S=null,hist=[],running=false,raf=0;
+  const f3=x=>x.toFixed(3).replace('.',','),f4=x=>x.toFixed(4).replace('.',',');
+  function restart(){stop();S=makeMemorySim(opt);hist=[S.metrics()];render();}
+  function stepN(n){for(let q=0;q<n;q++){S.step();hist.push(S.metrics());}}
+  function colorOf(c){const r=Math.round(70+170*c),g=Math.round(110-50*c),b=Math.round(255-175*c);return `rgb(${r},${g},${b})`;}
+  function drawDots(){
+    const cv=$('dots'),ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=330;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    const cw=W/S.COLS,ch=H/S.ROWS,px=i=>cw*(i%S.COLS)+cw/2,py=i=>ch*((i/S.COLS)|0)+ch/2;
+    const stride=Math.max(1,Math.ceil(S.E.size/700));let q=0;
+    ctx.strokeStyle='rgba(150,170,200,.13)';ctx.lineWidth=1;ctx.beginPath();
+    for(const k of S.E.keys()){if((q++)%stride)continue;const i=k>>10,j=k&1023;ctx.moveTo(px(i),py(i));ctx.lineTo(px(j),py(j));}
+    ctx.stroke();
+    const rmax=Math.min(cw,ch)*0.46;
+    for(let i=0;i<S.N;i++){ctx.fillStyle=colorOf(S.c[i]);ctx.beginPath();ctx.arc(px(i),py(i),0.8+rmax*S.s[i],0,6.2832);ctx.fill();}
+  }
+  function drawChart(){
+    const cv=$('chart'),ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=230;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    const pad={l:36,r:8,t:8,b:20},pw=W-pad.l-pad.r,ph=H-pad.t-pad.b,G=Math.max(300,hist.length-1);
+    const X=g=>pad.l+pw*g/G,Y=v=>pad.t+ph*(1-Math.min(1,v));
+    ctx.font='11px sans-serif';ctx.fillStyle=C('--mut');ctx.strokeStyle=C('--line');
+    for(let v=0;v<=1.0001;v+=0.25){const y=Y(v);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillText(v.toFixed(2).replace('.',','),2,y+3);}
+    ctx.fillText('Gen. 0',pad.l,H-5);ctx.fillText('Gen. '+G,W-pad.r-48,H-5);
+    const line=(fn,col,w,dash)=>{ctx.strokeStyle=col;ctx.lineWidth=w;ctx.setLineDash(dash||[]);ctx.beginPath();let on=false;
+      hist.forEach((m,g)=>{const v=fn(m);if(v===null){on=false;return;}on?ctx.lineTo(X(g),Y(v)):ctx.moveTo(X(g),Y(v));on=true;});ctx.stroke();ctx.setLineDash([]);};
+    line(m=>m.edges/m.maxEdges,C('--tq'),2);line(m=>2*m.spread,C('--or'),2);
+    line(m=>m.Jnull,C('--vi'),1.3,[5,4]);line(m=>m.J,C('--vi'),2.4);
+    const d=hist[hist.length-1].distGen;
+    if(d>=0){ctx.strokeStyle='rgba(239,68,68,.6)';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(X(d),pad.t);ctx.lineTo(X(d),pad.t+ph);ctx.stroke();ctx.setLineDash([]);}
+  }
+  function render(){
+    const m=hist[hist.length-1];
+    $('genPill').textContent='Generation '+m.gen;$('sGen').textContent=m.gen;$('sEdges').textContent=m.edges;
+    $('sSpread').textContent=f4(m.spread);$('sDs').textContent=f4(m.ds);$('sGroups').textContent=m.groups;
+    $('phase').textContent=m.distGen>=0?'· nach Störung (Gen '+m.distGen+')':'· vor Störung';
+    if(m.J===null){['sJ','sJn','sPers','sRet','sExp'].forEach(id=>$(id).textContent='–');
+      $('verdict').textContent='Noch keine Störung. Erst die Struktur entwickeln lassen, dann „Störung auslösen“.';}
+    else{$('sJ').textContent=f3(m.J);$('sJn').textContent=f3(m.Jnull);$('sPers').textContent=m.persisted;
+      $('sRet').textContent=m.returned;$('sExp').textContent=m.expRet.toFixed(1).replace('.',',');
+      const ratio=m.returned/Math.max(m.expRet,0.5),since=m.gen-m.distGen;
+      let txt;
+      if(since<30)txt='Störung läuft seit '+since+' Generationen. Noch zu früh für ein Urteil.';
+      else if(m.returned<10&&m.expRet<10)txt='Kaum Rückkehr ('+m.returned+' Kanten, Zufall erwartet '+m.expRet.toFixed(1).replace('.',',')+'). J ist fast nur die Zahl der Kanten, die überlebt haben, also kein Gedächtnis.';
+      else if(ratio<1.3)txt='Zurückgekehrte Kanten ≈ Zufall (Verhältnis '+ratio.toFixed(2).replace('.',',')+'). Hohe Ähnlichkeit, aber kein Gedächtnis: Das erklärt die kleine Kandidatenmenge.';
+      else txt='Mehr Rückkehr als Zufall (Verhältnis '+ratio.toFixed(2).replace('.',',')+'). Die alten Partner werden wieder ähnlich, weil die ungestörten Nachbarn die Farben zurückziehen. Das Gedächtnis liegt in den Zuständen, nicht in den Kanten.';
+      $('verdict').textContent=txt;}
+    $('vEps').textContent=opt.eps.toFixed(2).replace('.',',');
+    drawDots();drawChart();
+  }
+  function frame(){stepN(+$('tempo').value);render();if(running)raf=requestAnimationFrame(frame);}
+  function stop(){running=false;cancelAnimationFrame(raf);$('run').textContent='▶ Start';}
+  $('run').onclick=()=>{if(running){stop();return;}running=true;$('run').textContent='⏸ Pause';frame();};
+  $('one').onclick=()=>{stepN(1);render();};
+  $('hund').onclick=()=>{stepN(100);render();};
+  $('restart').onclick=restart;
+  $('dist').onclick=()=>{S.disturb();hist[hist.length-1]=S.metrics();render();};
+  $('mode').onchange=e=>{opt.mode=e.target.value;restart();};
+  $('eps').oninput=e=>{opt.eps=+e.target.value;$('vEps').textContent=opt.eps.toFixed(2).replace('.',',');};
+  $('eps').onchange=restart;
+  document.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{
+    const [mode,eps,td]=b.dataset.exp.split(',');opt.mode=mode;opt.eps=+eps;$('mode').value=mode;$('eps').value=eps;
+    restart();stepN(+td);S.disturb();hist[hist.length-1]=S.metrics();stepN(300);render();});
+  window.addEventListener('resize',render);
+  restart();
+})();
+</script>
+</body>
+</html>
