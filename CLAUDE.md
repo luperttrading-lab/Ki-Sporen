@@ -26,7 +26,7 @@
 | `index.html` | Startseite mit Links und Info-Knöpfen zu allen Laboren |
 | `nachbau_1_loop_labor.html` | Video-Labor 1: genetischer Algorithmus mit Ziel (Start exakt wie im Video, Seed 44); Sinus-Layer an die digitalisierte rote Videokurve angepasst (A 0,126, P 245, Abweichung 0,013), logistisch umschaltbar |
 | `nachbau_2_ohne_ziel.html` | Video-Labor 2: Ring-Mittelung + logistische Abbildung, mit Theoriekurve |
-| `nachbau_4_gedaechtnis.html` | Video-Labor 4: adaptives Netz, Störungstest, Zufallserwartung |
+| `nachbau_4_gedaechtnis.html` | Video-Labor 4: Oberfläche wie im Video, Parameter an Video angepasst (Seed 359: Gen 0 und 630 exakt; Mischrate Farbe 0,0258, Größe 0,15; ε 0,47); Gegenproben und Versuche A–F getrennt darunter |
 | `ausbreitungs_labor_sir.html` | eigene Erweiterung zum Artikel: SEIQ-Modell (Mean-Field) |
 | `netzwerk_labor_cluster.html` | eigene Erweiterung zum Artikel: SEIQ auf geclustertem Graphen |
 
