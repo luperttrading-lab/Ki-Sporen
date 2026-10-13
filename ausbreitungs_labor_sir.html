@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ausbreitungs-Labor SEIQ</title>
+<style>
+  :root{
+    --bg:#0a0e17; --panel:#111726; --panel2:#0d1320; --line:#1e293b;
+    --tx:#e5edf7; --mut:#93a4bd; --mut2:#64748b;
+    --S:#3b82f6; --E:#f59e0b; --I:#ef4444; --Q:#2dd4bf; --acc:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px}
+  .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:var(--acc);margin:0 0 10px}
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px;font-weight:800}
+  .sub{color:var(--mut);margin:0 0 4px;max-width:70ch}
+  .grid{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:22px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h2{font-size:14px;margin:0 0 14px;font-weight:700;letter-spacing:.02em}
+  canvas{width:100%;display:block;border-radius:8px}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:13px;color:var(--mut)}
+  .legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  .controls{display:flex;flex-direction:column;gap:16px}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .row label{font-size:13px;color:var(--mut)}
+  .row .val{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+  input[type=range]{width:100%;accent-color:var(--acc);margin-top:6px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  button{background:#16213a;color:var(--tx);border:1px solid var(--line);border-radius:9px;
+    padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+  button.primary{background:var(--acc);color:#071020;border-color:var(--acc)}
+  button:hover{filter:brightness(1.12)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{border:0;border-radius:0;flex:1;background:transparent}
+  .seg button.on{background:var(--Q);color:#05211d}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+  .stat .k{font-size:11px;color:var(--mut);margin-bottom:4px}
+  .stat .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:12px;font-weight:600;color:var(--mut)}
+  .eq{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;
+    font:13px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#cdd9ea;overflow-x:auto}
+  .eq .c{color:var(--mut2)}
+  .note{color:var(--mut);font-size:13px;margin-top:14px;max-width:85ch}
+  .note b{color:#c9d6e8}
+  .warn{border-left:3px solid var(--I);padding-left:12px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;color:var(--Q);
+    border:1px solid #1d3b37;background:#0c1d1b;border-radius:999px;padding:2px 9px;vertical-align:middle;margin-left:8px}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:4px}
+  td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">Experiment · Ausbreitung · Verteidigung</p>
+  <h1>Ausbreitungs-Labor: KI-Wurm über Geräte <span class="pill">defensiv</span></h1>
+  <p class="sub">Ein kompartimentelles SEIQ-Modell (Differentialgleichungen) der Verbreitung eines sich
+  replizierenden Modells über schlecht gesicherte Geräte — und der Wirkung von Erkennung und Quarantäne.
+  Kalibriert gegen die veröffentlichten Kennzahlen des Anthropic-Artikels vom 12.10.2026.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Verlauf der Population über die Zeit</h2>
+      <canvas id="chart" height="380"></canvas>
+      <div class="legend">
+        <span><b style="background:var(--S)"></b>S anfällig</span>
+        <span><b style="background:var(--E)"></b>E infiltriert (Setup läuft)</span>
+        <span><b style="background:var(--I)"></b>I infektiös (verbreitet aktiv)</span>
+        <span><b style="background:var(--Q)"></b>Q in Quarantäne / bereinigt</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Steuerung</h2>
+      <div class="controls">
+        <div>
+          <div class="row"><label>β — Übertragung (Neuinfektionen je infektiösem Gerät/Tag)</label><span class="val" id="vbeta"></span></div>
+          <input type="range" id="beta" min="0.05" max="2" step="0.01" value="0.67">
+        </div>
+        <div>
+          <div class="row"><label>σ — Setup-Tempo (E→I), 1/σ = Einrichtungszeit</label><span class="val" id="vsigma"></span></div>
+          <input type="range" id="sigma" min="0.1" max="1.2" step="0.01" value="0.61">
+          <div class="btns" style="margin-top:8px">
+            <button data-sigma="0.61">Qwen3.5-9B · 28–51 h</button>
+            <button data-sigma="0.22">Gemma4-26B · 71–150 h</button>
+          </div>
+        </div>
+        <div>
+          <div class="row"><label>γ — Entfernung (I→Q), aus Mirai-Bereinigung</label><span class="val" id="vgamma"></span></div>
+          <div class="seg" id="segNotify">
+            <button class="on" data-gamma="0.1804">mit Benachrichtigung</button>
+            <button data-gamma="0.0962">ohne</button>
+          </div>
+        </div>
+        <div>
+          <div class="row"><label>ω — Re-Infektion nach Neustart (Q→S)</label><span class="val" id="vomega"></span></div>
+          <input type="range" id="omega" min="0" max="0.2" step="0.005" value="0">
+        </div>
+        <div>
+          <div class="row"><label>N — anfällige Geräte</label><span class="val" id="vN"></span></div>
+          <input type="range" id="N" min="4" max="7" step="0.01" value="6.3">
+          <div class="note" style="margin-top:4px;font-size:12px">Logarithmisch: 10⁴ … 10⁷</div>
+        </div>
+        <div class="btns">
+          <button class="primary" id="replay">↻ Neu rechnen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:18px">
+    <div class="card">
+      <h2>Kennzahlen</h2>
+      <div class="stats">
+        <div class="stat"><div class="k">Basis-Reproduktionszahl R₀ = β/γ</div><div class="v" id="sR0"></div></div>
+        <div class="stat"><div class="k">Maximal gleichzeitig infektiös</div><div class="v" id="sPeak"></div></div>
+        <div class="stat"><div class="k">Zeitpunkt des Höhepunkts</div><div class="v" id="sTpeak"></div></div>
+        <div class="stat"><div class="k">Nie infiziert (Endzustand)</div><div class="v" id="sNever"></div></div>
+        <div class="stat"><div class="k">Aggregierte Inferenz beim Peak</div><div class="v" id="sTok"></div></div>
+        <div class="stat"><div class="k">entspricht ≈</div><div class="v" id="sH100"></div></div>
+      </div>
+      <div class="note warn" style="margin-top:14px">
+        <b>R₀ &lt; 1</b> bedeutet: die Welle stirbt aus. Der Hebel der Verteidigung ist γ — schnellere
+        Erkennung und Quarantäne senkt R₀ direkt. Der Artikel zeigt genau das: Benachrichtigung der
+        Anschluss-Inhaber hob die Bereinigung von 74 % auf 92 % in 14 Tagen.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Modellgleichungen (SEIQ)</h2>
+      <div class="eq">
+dS/dt = <span class="c">−</span>β·S·I/N <span class="c">+</span> ω·Q
+dE/dt = <span class="c">+</span>β·S·I/N <span class="c">−</span> σ·E
+dI/dt = <span class="c">+</span>σ·E <span class="c">−</span> γ·I
+dQ/dt = <span class="c">+</span>γ·I <span class="c">−</span> ω·Q
+
+<span class="c"># Integration: RK4, dt = 0.1 Tage</span>
+<span class="c"># S+E+I+Q = N bleibt erhalten</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2>Kalibrierung gegen den Artikel</h2>
+    <table>
+      <tr><th>Parameter</th><th>Wert</th><th>Herkunft aus dem Artikel</th></tr>
+      <tr><td>γ mit Benachrichtigung</td><td class="n">0,180 /Tag</td><td>Mirai: 92 % bereinigt in 14 Tagen → 1−e^(−γ·14)=0,92</td></tr>
+      <tr><td>γ ohne</td><td class="n">0,096 /Tag</td><td>74 % in 14 Tagen → 1−e^(−γ·14)=0,74</td></tr>
+      <tr><td>σ Qwen3.5-9B</td><td class="n">0,61 /Tag</td><td>Inferenz-Setup 28–51 h, Mitte ≈ 1,65 Tage</td></tr>
+      <tr><td>σ Gemma4-26B</td><td class="n">0,22 /Tag</td><td>Setup 71–150 h, Mitte ≈ 4,6 Tage</td></tr>
+      <tr><td>Tok/s je Gerät</td><td class="n">0,35</td><td>TV-Box-Demo: 0,3–0,39 Tok/s</td></tr>
+      <tr><td>H100-Äquivalent</td><td class="n">17 500 Tok/s</td><td>Rückrechnung: 2 Mio.·0,35 / 40 = 17,5k (ergibt die 40 H100 des Artikels)</td></tr>
+    </table>
+    <p class="note"><b>Was das ist und was nicht.</b> Dies ist ein Epidemie-Modell der <i>Ausbreitungsdynamik</i>
+    auf Populationsebene, wie es in der mathematischen Epidemiologie seit Kermack–McKendrick (1927) üblich ist.
+    Es beschreibt keine Schritte zum Bau von Schadsoftware, sondern wie schnell sich etwas verteilt und wie stark
+    Erkennung und Quarantäne das dämpfen — die Verteidigungsfrage des Artikels. β ist der spekulativste Parameter:
+    im Experiment des Artikels war der Zugang künstlich erleichtert (offener ADB-Port ohne Passwort), die realen
+    Werte liegen darunter. Alle Rechnungen laufen lokal im Browser, offline. Kein Beweis für reale Ausbreitung,
+    keine operative Anleitung.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const cv=$('chart'), ctx=cv.getContext('2d');
+  const C=getComputedStyle(document.documentElement);
+  const col={S:C.getPropertyValue('--S').trim(),E:C.getPropertyValue('--E').trim(),
+             I:C.getPropertyValue('--I').trim(),Q:C.getPropertyValue('--Q').trim(),
+             line:C.getPropertyValue('--line').trim(),mut:C.getPropertyValue('--mut').trim()};
+  const TOK=0.35, H100=17500, DAYS=200, DT=0.1;
+  const P={beta:0.67,sigma:0.61,gamma:0.1804,omega:0,N:Math.pow(10,6.3),I0:10};
+
+  function simulate(){
+    const N=P.N; let S=N-P.I0,E=0,I=P.I0,Q=0,t=0;
+    const series={S:[],E:[],I:[],Q:[]}; let peakI=0,tpeak=0;
+    const deriv=(S,E,I,Q)=>{const inf=P.beta*S*I/N;
+      return [-inf+P.omega*Q, inf-P.sigma*E, P.sigma*E-P.gamma*I, P.gamma*I-P.omega*Q];};
+    const steps=Math.round(DAYS/DT);
+    for(let n=0;n<=steps;n++){
+      if(n% (1/DT|0)===0){series.S.push(S);series.E.push(E);series.I.push(I);series.Q.push(Q);}
+      if(I>peakI){peakI=I;tpeak=t;}
+      const k1=deriv(S,E,I,Q),
+            k2=deriv(S+DT/2*k1[0],E+DT/2*k1[1],I+DT/2*k1[2],Q+DT/2*k1[3]),
+            k3=deriv(S+DT/2*k2[0],E+DT/2*k2[1],I+DT/2*k2[2],Q+DT/2*k2[3]),
+            k4=deriv(S+DT*k3[0],E+DT*k3[1],I+DT*k3[2],Q+DT*k3[3]);
+      S+=DT/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]);
+      E+=DT/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]);
+      I+=DT/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2]);
+      Q+=DT/6*(k1[3]+2*k2[3]+2*k3[3]+k4[3]);
+      t+=DT;
+    }
+    return {series,peakI,tpeak,Sfinal:S,N};
+  }
+
+  function fmt(x){ if(x>=1e6)return (x/1e6).toFixed(2)+' Mio.';
+    if(x>=1e3)return (x/1e3).toFixed(0)+'k'; return Math.round(x).toString();}
+
+  function draw(r){
+    const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=380;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    const pad={l:52,r:12,t:12,b:26}, pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+    const N=r.N, n=r.series.S.length;
+    const x=i=>pad.l+pw*i/(n-1), y=v=>pad.t+ph*(1-v/N);
+    // grid
+    ctx.strokeStyle=col.line; ctx.fillStyle=col.mut; ctx.font='11px sans-serif'; ctx.lineWidth=1;
+    for(let g=0;g<=5;g++){const yy=pad.t+ph*g/5; ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(W-pad.r,yy);ctx.stroke();
+      ctx.fillText((100-g*20)+'%',8,yy+3);}
+    for(let d=0;d<=DAYS;d+=40){const xx=pad.l+pw*d/DAYS; ctx.fillText(d+'d',xx-6,H-8);}
+    // areas (stacked would hide I; draw lines)
+    const plot=(arr,c,w)=>{ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();
+      arr.forEach((v,i)=>{i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v));});ctx.stroke();};
+    plot(r.series.S,col.S,2);
+    plot(r.series.Q,col.Q,2);
+    plot(r.series.E,col.E,1.6);
+    plot(r.series.I,col.I,2.6);
+    // peak marker
+    const pi=r.series.I.indexOf(Math.max(...r.series.I));
+    ctx.strokeStyle='rgba(239,68,68,.35)';ctx.setLineDash([4,4]);ctx.beginPath();
+    ctx.moveTo(x(pi),pad.t);ctx.lineTo(x(pi),pad.t+ph);ctx.stroke();ctx.setLineDash([]);
+  }
+
+  function update(){
+    P.beta=+$('beta').value; P.sigma=+$('sigma').value; P.omega=+$('omega').value;
+    P.N=Math.pow(10,+$('N').value);
+    $('vbeta').textContent=P.beta.toFixed(2);
+    $('vsigma').textContent=P.sigma.toFixed(2)+' /Tag  ·  '+(24/P.sigma).toFixed(0)+' h Setup';
+    $('vgamma').textContent=P.gamma.toFixed(3)+' /Tag  ·  '+(1/P.gamma).toFixed(1)+' Tage';
+    $('vomega').textContent=P.omega.toFixed(3)+(P.omega?'':' (keine)');
+    $('vN').textContent=fmt(P.N);
+    const r=simulate();
+    draw(r);
+    const R0=P.beta/P.gamma;
+    $('sR0').textContent=R0.toFixed(2);
+    $('sPeak').innerHTML=(r.peakI/r.N*100).toFixed(1)+'% <small>'+fmt(r.peakI)+'</small>';
+    $('sTpeak').innerHTML= r.peakI>P.I0*1.01 ? 'Tag '+Math.round(r.tpeak) : '<small>keine Welle</small>';
+    $('sNever').textContent=(r.Sfinal/r.N*100).toFixed(1)+'%';
+    const tok=r.peakI*TOK;
+    $('sTok').innerHTML=fmt(tok)+' <small>Tok/s</small>';
+    $('sH100').innerHTML=(tok/H100).toFixed(0)+' <small>H100-Äq.</small>';
+  }
+
+  // wiring
+  ['beta','sigma','omega','N'].forEach(id=>$(id).addEventListener('input',update));
+  document.querySelectorAll('[data-sigma]').forEach(b=>b.addEventListener('click',()=>{
+    $('sigma').value=b.dataset.sigma; update();}));
+  $('segNotify').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $('segNotify').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); P.gamma=+b.dataset.gamma; update();}));
+  $('replay').addEventListener('click',update);
+  window.addEventListener('resize',update);
+  update();
+})();
+</script>
+</body>
+</html>
