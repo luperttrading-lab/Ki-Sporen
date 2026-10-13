@@ -46,30 +46,94 @@
   .tl a.lab-chip{border-color:#1d4ed8;background:#1d4ed8;color:#fff}
   .tl a.lab-chip b{color:#dbeafe}
   dd a{color:var(--acc)}
+  .anim{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+  .ctl,.seg{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .seg{margin-top:10px;font-size:13px;color:var(--mut)}
+  .anim button{font:inherit;font-size:14px;font-weight:600;color:var(--tx);background:#16213a;border:1px solid #24324d;border-radius:10px;padding:8px 13px;cursor:pointer}
+  .anim button:hover{filter:brightness(1.15)}
+  .anim button.pri{background:var(--acc);color:#071020;border-color:var(--acc);min-width:128px}
+  .seg button{font-size:13px;padding:6px 11px;border-radius:999px}
+  .seg button[aria-pressed="true"]{background:#0f3b36;border-color:var(--tq);color:#fff}
+  .steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;font-size:12.5px;align-items:center}
+  .steps span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--mut)}
+  .steps span.rd{border:none;padding-left:0;color:var(--tx);font-weight:700;min-width:70px}
+  .steps span.on{background:#facc15;border-color:#facc15;color:#000;font-weight:700}
+  .say{min-height:5.2em;margin:10px 0 6px;font-size:14.5px;color:#dbe5f3}
+  .ag{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  @media(max-width:640px){.ag{grid-template-columns:1fr}}
+  .kt{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+  .kt th{color:var(--mut);font-weight:600;text-align:right;padding:4px 5px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .kt td{text-align:right;padding:4px 5px;border-bottom:1px solid #172033;white-space:nowrap}
+  .kt th:first-child,.kt td:first-child,.kt th:last-child,.kt td:last-child{text-align:left}
+  .sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+  .kt .ok{color:#4ade80}.kt .no{color:#f87171}.kt .hit{color:#facc15}.kt .nw{color:var(--acc)}
+  .chart{position:relative}
+  .chart svg{width:100%;height:auto;display:block;touch-action:pan-y}
+  .lg{display:flex;gap:14px;font-size:12.5px;color:#cdd9ea;margin-bottom:4px;flex-wrap:wrap}
+  .lg i{display:inline-block;width:16px;height:2px;vertical-align:middle;margin-right:6px}
+  .tip{position:absolute;pointer-events:none;background:#0b1220;border:1px solid #24324d;border-radius:8px;padding:6px 9px;font-size:12px;color:#dbe5f3;white-space:nowrap;display:none;line-height:1.5}
+  .now{font-size:12.5px;color:var(--mut);margin:4px 0 0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <p class="kicker">Projekt KI-Sporen · Nachbau des Videos</p>
   <h1>Alle Labore</h1>
-  <svg class="diagram" viewBox="0 0 1100 870" role="img" aria-label="Diagramm Parallele rekursive Loops: sieben Loops liefern an einen Ergebnis-Container, dann Regelsystem plus Ziel, dann Variations-Konnektor, der zurück zu den Loops koppelt">
+  <svg id="dia" class="diagram" viewBox="0 0 1100 870" role="img" aria-label="Diagramm Parallele rekursive Loops: sieben Loops liefern an einen Ergebnis-Container, dann Regelsystem plus Ziel, dann Variations-Konnektor, der zurück zu den Loops koppelt. Unter dem Bild lässt es sich Runde für Runde durchspielen.">
+  <defs><filter id="glow" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
   <rect width="1100" height="870" rx="18" fill="#000"/>
   <text x="530" y="47" text-anchor="middle" font-size="27" fill="#e5e7eb">Parallele rekursive Loops</text>
-  <path d="M22 175 V706 H288 M771 706 H1036 V175" fill="none" stroke="#14a38f" stroke-width="5"/>
+  <path id="ret" d="M22 175 V706 H288 M771 706 H1036 V175" fill="none" stroke="#14a38f" stroke-width="5"/>
   <path d="M12 140 L42 157 L12 174" fill="none" stroke="#9ca3af" stroke-width="9" stroke-linejoin="round"/>
   <path d="M1046 140 L1016 157 L1046 174" fill="none" stroke="#9ca3af" stroke-width="9" stroke-linejoin="round"/>
-  <rect x="38" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="99.5" cy="157" r="21" fill="#3b82f6"/><rect x="178" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="239.5" cy="157" r="31" fill="#e5636e"/><rect x="318" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="379.5" cy="157" r="40" fill="#3b82f6"/><rect x="459" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="520.5" cy="157" r="21" fill="#e5636e"/><rect x="599" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="660.5" cy="157" r="30" fill="#3b82f6"/><rect x="739" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="800.5" cy="157" r="40" fill="#e5636e"/><rect x="880" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="941.5" cy="157" r="21" fill="#3b82f6"/>
+  <g id="k0"><rect x="38" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="99.5" cy="157" r="21" fill="#3b82f6"/><text class="bd" x="99.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="99.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g><g id="k1"><rect x="178" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="239.5" cy="157" r="31" fill="#e5636e"/><text class="bd" x="239.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="239.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g><g id="k2"><rect x="318" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="379.5" cy="157" r="40" fill="#3b82f6"/><text class="bd" x="379.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="379.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g><g id="k3"><rect x="459" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="520.5" cy="157" r="21" fill="#e5636e"/><text class="bd" x="520.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="520.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g><g id="k4"><rect x="599" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="660.5" cy="157" r="30" fill="#3b82f6"/><text class="bd" x="660.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="660.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g><g id="k5"><rect x="739" y="71" width="123" height="174" rx="16" fill="#200d13" stroke="#e0626f" stroke-width="3"/><circle cx="800.5" cy="157" r="40" fill="#e5636e"/><text class="bd" x="800.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="800.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g><g id="k6"><rect x="880" y="71" width="123" height="174" rx="16" fill="#081424" stroke="#3b82f6" stroke-width="3"/><circle cx="941.5" cy="157" r="21" fill="#3b82f6"/><text class="bd" x="941.5" y="108" text-anchor="middle" font-size="34" font-weight="800"></text><text class="er" x="941.5" y="234" text-anchor="middle" font-size="22" fill="#cbd5e1"></text></g>
   <g stroke="#9ca3af" stroke-width="3" fill="none"><path d="M529 252 V296 M519 286 L529 298 L539 286"/><path d="M529 434 V474 M519 464 L529 476 L539 464"/><path d="M529 606 V646 M519 636 L529 648 L539 636"/></g>
-  <rect x="288" y="309" width="483" height="121" rx="16" fill="#1c1626" stroke="#a48fd8" stroke-width="3"/>
+  <rect id="bxE" x="288" y="309" width="483" height="121" rx="16" fill="#1c1626" stroke="#a48fd8" stroke-width="3"/>
   <text x="529" y="361" text-anchor="middle" font-size="32" font-weight="700" fill="#f3f4f6">Ergebnis-Container</text>
   <text x="529" y="404" text-anchor="middle" font-size="25" fill="#e5e7eb">Zustände und Verlauf</text>
-  <rect x="288" y="487" width="483" height="115" rx="16" fill="#03191a" stroke="#1f9e8a" stroke-width="3"/>
+  <g id="gR"><rect id="bxR" x="288" y="487" width="483" height="115" rx="16" fill="#03191a" stroke="#1f9e8a" stroke-width="3"/>
   <text x="529" y="558" text-anchor="middle" font-size="32" font-weight="700" fill="#f3f4f6">Regelsystem + Ziel</text>
-  <rect x="288" y="654" width="483" height="106" rx="16" fill="#271c0a" stroke="#d9a441" stroke-width="3"/>
+  <g id="tgt" visibility="hidden"><circle id="tgO" cx="730" cy="545" r="34" fill="none" stroke="#e5e7eb" stroke-width="2" stroke-dasharray="5 5"/><circle id="tgD" cx="730" cy="545" r="26" fill="#8f73b2"/></g></g>
+  <rect id="bxV" x="288" y="654" width="483" height="106" rx="16" fill="#271c0a" stroke="#d9a441" stroke-width="3"/>
   <text x="529" y="719" text-anchor="middle" font-size="30" font-weight="700" fill="#f3f4f6">Variations-Konnektor</text>
   <text x="530" y="845" text-anchor="middle" font-size="29" fill="#e5e7eb">Bewerten → Variieren → erneut durchlaufen</text>
+  <g id="fx"></g>
 </svg>
-  <p class="cap">Das Diagramm aus dem Video (<a href="https://youtu.be/M7zLg-YNcyU?t=183" target="_blank" rel="noopener">3:03–4:48</a>), nachgebaut. Nach dieser Schaltung sind die Labore gebaut.</p>
+  <p class="cap">Das Diagramm aus dem Video (<a href="https://youtu.be/M7zLg-YNcyU?t=183" target="_blank" rel="noopener">3:03–4:48</a>), nachgebaut. Unten lässt es sich Runde für Runde durchspielen. Labor 1 folgt dieser Schaltung vollständig, Labor 2 und 4 haben keinen Ziel-Kasten.</p>
+  <div class="anim" id="anim">
+    <div class="ctl">
+      <button id="aPlay" class="pri">▶ Abspielen</button>
+      <button id="aStep">Schritt ›</button>
+      <button id="aDist">⚡ Störung</button>
+      <button id="aSpeed" title="Tempo">Tempo 1×</button>
+      <button id="aReset">↺ Neu</button>
+    </div>
+    <div class="seg" role="group" aria-label="Ziel im Regelsystem">
+      <span>Ziel:</span>
+      <button data-goal="A" aria-pressed="true">lila, groß (wie Labor 1)</button>
+      <button data-goal="B" aria-pressed="false">rot, klein</button>
+      <button data-goal="0" aria-pressed="false">kein Ziel (wie Labor 2/4)</button>
+    </div>
+    <div class="steps" id="aSteps"><span class="rd" id="aRound">Runde 0</span><span data-p="1">1 Messen</span><span data-p="2">2 Bewerten</span><span data-p="3">3 Variieren</span><span data-p="4">4 Zurückführen</span></div>
+    <p class="say" id="aSay" aria-live="polite"></p>
+    <div class="ag">
+      <table class="kt">
+        <thead><tr><th>Karte</th><th>Rot</th><th>Größe</th><th>Abstand</th><th>Status</th></tr></thead>
+        <tbody id="aTab"></tbody>
+      </table>
+      <div class="chart" id="aChart">
+        <div class="lg"><span><i style="background:#199e70"></i>Abstand zum Ziel</span><span><i style="background:#9085e9"></i>Streuung der Karten</span></div>
+        <svg id="aSvg" viewBox="0 0 420 180" role="img" aria-label="Verlauf über die Runden: mittlerer Abstand zum Ziel und Streuung"></svg>
+        <div class="tip" id="aTip"></div>
+        <p class="now" id="aNow"></p>
+      </div>
+    </div>
+    <p class="cap">Anschauungsmodell, nicht aus dem Video: Das Video sagt nicht, was in den Karten steht und wie gemischt wird.
+    Angenommen: jede Karte trägt zwei Zahlen (Rot-Anteil 0 = blau bis 1 = rot, Größe 0–1); pro Runde bleiben die 2 Karten mit
+    dem kleinsten Abstand zum Ziel (Labor 1: 200 von 1000); jede neue Zahl liegt zufällig zwischen denen der Eltern, plus Rauschen
+    (σ 0,05 bzw. 0,04). Abstand = √((Rot − Ziel-Rot)² + (Größe − Ziel-Größe)²). Abstand zum Ziel in der Kurve = Mittel über die 7 Karten;
+    Streuung = √(Varianz Rot + Varianz Größe), also wie weit die Karten um ihren eigenen Durchschnitt liegen.</p>
+  </div>
 
   <h2 style="margin-top:22px">Ablauf im Video</h2>
   <div class="tl">
@@ -174,5 +238,194 @@
   <p class="foot">Alles rechnet lokal im Browser, ohne Server. Rekonstruiert aus Screenshots und dem
   Transkript des Videos.</p>
 </div>
+<script>
+// Animiertes Loop-Diagramm: eine Runde = Messen → Bewerten → Variieren → Zurückführen.
+(function(){
+  const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+  const CX=[99.5,239.5,379.5,520.5,660.5,800.5,941.5], N=7, KEEP=2, SR=0.05, SS=0.04;
+  const GOALS={A:{r:0.5,s:0.72},B:{r:0.9,s:0.3}};
+  // Startwerte so gewählt, dass die Punkte exakt die Radien aus dem Video haben (r = 12 + 36·Größe)
+  const START=[[0,0.25],[1,0.5278],[0,0.7778],[1,0.25],[0,0.5],[1,0.7778],[0,0.25]];
+  const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DOT=[[59,130,246],[229,99,110]], STR=[[59,130,246],[224,98,111]], BG=[[8,20,36],[32,13,19]];
+  const mix=(p,t)=>'rgb('+p[0].map((v,k)=>Math.round(v+(p[1][k]-v)*t)).join(',')+')';
+  const rad=s=>12+36*s, clip=v=>v<0?0:v>1?1:v;
+  const fmt=v=>v==null?'–':v.toFixed(2).replace('.',',');
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  let rnd,spare,cards,goalKey,round,phase,kids,keep,hist,started,busy=false,playing=false,speed=1;
+  const gauss=()=>{if(spare!=null){const v=spare;spare=null;return v;}let u=0;while(!u)u=rnd();const v=rnd(),m=Math.sqrt(-2*Math.log(u));spare=m*Math.sin(2*Math.PI*v);return m*Math.cos(2*Math.PI*v);};
+  const goal=()=>GOALS[goalKey]||null;
+  const dist=c=>{const g=goal();return g?Math.hypot(c.r-g.r,c.s-g.s):null;};
+  function stats(){let mr=0,ms=0;cards.forEach(c=>{mr+=c.r;ms+=c.s;});mr/=N;ms/=N;let v=0;cards.forEach(c=>{v+=(c.r-mr)**2+(c.s-ms)**2;});
+    return {d:goal()?cards.reduce((a,c)=>a+dist(c),0)/N:null,sp:Math.sqrt(v/N),mr,ms};}
+  const say=t=>{$('aSay').textContent=t;};
+  const whenIdle=async()=>{while(busy)await sleep(40);};
+
+  // ---------- Zeichnen ----------
+  const BADGE={keep:['✓','#4ade80'],out:['✗','#f87171'],hit:['⚡','#facc15']};
+  const STAT={keep:['✓ bleibt','ok'],out:['✗ raus','no'],hit:['⚡ gestört','hit'],new:['neu','nw']};
+  function draw(){
+    cards.forEach((c,i)=>{
+      const g=$('k'+i),rc=g.querySelector('rect'),ci=g.querySelector('circle'),bd=g.querySelector('.bd'),er=g.querySelector('.er');
+      rc.setAttribute('stroke',mix(STR,c.r));rc.setAttribute('fill',mix(BG,c.r));
+      ci.setAttribute('r',rad(c.s).toFixed(2));ci.setAttribute('fill',mix(DOT,c.r));
+      g.setAttribute('opacity',c.st==='out'?0.28:1);
+      const b=BADGE[c.st];bd.textContent=b?b[0]:'';if(b)bd.setAttribute('fill',b[1]);
+      er.textContent=c.showD&&goal()?fmt(dist(c)):'';
+      const row=$('aTab').rows[i];
+      row.cells[0].firstChild.style.background=mix(DOT,c.r);
+      row.cells[1].textContent=fmt(c.r);row.cells[2].textContent=fmt(c.s);row.cells[3].textContent=fmt(dist(c));
+      const s=STAT[c.st];row.cells[4].textContent=s?s[0]:'';row.cells[4].className=s?s[1]:'';
+    });
+    const g=goal();$('tgt').setAttribute('visibility',started&&g?'visible':'hidden');
+    if(g){$('tgD').setAttribute('fill',mix(DOT,g.r));$('tgD').setAttribute('r',(rad(g.s)*0.75).toFixed(1));$('tgO').setAttribute('r',(rad(g.s)*0.75+7).toFixed(1));}
+    $('gR').setAttribute('opacity',g?1:0.35);
+    $('aRound').textContent='Runde '+round;
+  }
+  function active(p){
+    [['bxE',1],['bxR',2],['bxV',3]].forEach(([id,q])=>{const e=$(id),on=p===q;e.setAttribute('stroke-width',on?6:3);
+      if(on)e.setAttribute('filter','url(#glow)');else e.removeAttribute('filter');});
+    const r=$('ret');r.setAttribute('stroke-width',p===4?9:5);if(p===4)r.setAttribute('filter','url(#glow)');else r.removeAttribute('filter');
+    document.querySelectorAll('#aSteps [data-p]').forEach(s=>s.classList.toggle('on',+s.dataset.p===p));
+  }
+
+  // ---------- Bewegung ----------
+  const ease=t=>t<.5?2*t*t:1-(-2*t+2)**2/2;
+  function tween(dur,f){dur/=speed;if(RM){f(1);return Promise.resolve();}
+    return new Promise(res=>{const t0=performance.now();(function g(now){const t=Math.min(1,Math.max(0,(now-t0)/dur));f(ease(t));if(t<1)requestAnimationFrame(g);else res();})(t0);});}
+  function fly(pts,color,dur,delay){if(RM)return Promise.resolve();
+    return sleep((delay||0)/speed).then(()=>{
+      const c=document.createElementNS(NS,'circle');c.setAttribute('r',11);c.setAttribute('fill',color);c.setAttribute('stroke','#fff');c.setAttribute('stroke-width',2.5);
+      c.setAttribute('cx',pts[0][0]);c.setAttribute('cy',pts[0][1]);$('fx').appendChild(c);
+      const seg=[];let L=0;for(let k=1;k<pts.length;k++){const l=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);seg.push(l);L+=l;}
+      return tween(dur,e=>{let d=e*L,k=0;while(k<seg.length-1&&d>seg[k]){d-=seg[k];k++;}const q=seg[k]?Math.min(1,d/seg[k]):1;
+        c.setAttribute('cx',(pts[k][0]+(pts[k+1][0]-pts[k][0])*q).toFixed(1));c.setAttribute('cy',(pts[k][1]+(pts[k+1][1]-pts[k][1])*q).toFixed(1));}).then(()=>c.remove());
+    });}
+
+  // ---------- Eine Runde ----------
+  async function step(){
+    if(busy)return;busy=true;started=true;
+    const p=(phase===0||phase===4)?1:phase+1, g=goal();
+    active(p);
+    if(p===1){
+      cards.forEach(c=>{if(c.st!=='hit')c.st='';c.showD=true;});draw();
+      say('Runde '+round+' · ① Messen: Jede Karte schickt ihre zwei Zahlen (Rot-Anteil, Größe) an den Ergebnis-Container. '+
+          'Der trägt sie in die Tabelle und in den Verlauf ein. Verändert wird dabei nichts.');
+      await Promise.all(cards.map((c,i)=>fly([[CX[i],245],[529,309]],mix(DOT,c.r),750,i*60)));
+      const s=stats();if(hist.length&&hist[hist.length-1].n===round)hist.pop();hist.push({n:round,d:s.d,sp:s.sp,mr:s.mr,ms:s.ms});chart();
+    }else if(p===2){
+      await fly([[529,430],[529,487]],'#a48fd8',500,0);
+      if(g){const idx=cards.map((c,i)=>i).sort((a,b)=>dist(cards[a])-dist(cards[b]));keep=idx.slice(0,KEEP);
+        cards.forEach((c,i)=>{c.st=keep.includes(i)?'keep':'out';});
+        say('② Bewerten: Das Regelsystem misst den Abstand jeder Karte zum Ziel (Rot '+fmt(g.r)+' · Größe '+fmt(g.s)+'). '+
+            'Die 2 nächsten bleiben (✓ Karte '+(keep[0]+1)+' und '+(keep[1]+1)+'), die anderen 5 fliegen raus (✗).');}
+      else{keep=cards.map((c,i)=>i);cards.forEach(c=>{c.st='';});
+        say('② Bewerten: Kein Ziel eingestellt. Das Regelsystem hat nichts zum Vergleichen, keine Karte fliegt raus.');}
+      draw();
+    }else if(p===3){
+      await Promise.all(keep.slice(0,g?KEEP:N).map((i,k)=>fly([[529,602],[529,654]],mix(DOT,cards[i].r),550,k*80)));
+      kids=[];
+      for(let j=0;j<N;j++){const ia=keep[(rnd()*keep.length)|0];let ib=ia;while(ib===ia&&keep.length>1)ib=keep[(rnd()*keep.length)|0];
+        const a=cards[ia],b=cards[ib],u=rnd(),w=rnd();
+        kids.push({r:clip(a.r+u*(b.r-a.r)+gauss()*SR),s:clip(a.s+w*(b.s-a.s)+gauss()*SS)});}
+      say(g?'③ Variieren: Der Variations-Konnektor baut aus Karte '+(keep[0]+1)+' und '+(keep[1]+1)+' sieben neue Karten. '+
+            'Jede Zahl ist ein zufälliger Punkt zwischen den beiden Eltern, dazu etwas Rauschen.'
+           :'③ Variieren: Jede neue Karte mischt zwei zufällig gezogene alte Karten, dazu etwas Rauschen. '+
+            'Ohne Auswahl rücken alle zum gemeinsamen Durchschnitt zusammen. Wohin, bestimmt kein Ziel, sondern der Zufall.');
+    }else{
+      say('④ Zurückführen: Über die türkise Linie ersetzen die neuen Karten die alte Reihe.');
+      await Promise.all(kids.map((k,j)=>{const left=j<4;
+        return fly(left?[[288,706],[22,706],[22,170],[40,157]]:[[771,706],[1036,706],[1036,170],[1018,157]],mix(DOT,k.r),900,(left?j:j-4)*110);}));
+      const old=cards.map(c=>({r:c.r,s:c.s}));
+      cards.forEach(c=>{c.st='new';c.showD=false;});
+      await tween(650,t=>{cards.forEach((c,i)=>{c.r=old[i].r+(kids[i].r-old[i].r)*t;c.s=old[i].s+(kids[i].s-old[i].s)*t;});draw();});
+      round++;draw();
+      say('④ Zurückführen: Über die türkise Linie haben die neuen Karten die alte Reihe ersetzt. Weiter mit Runde '+round+'.');
+    }
+    phase=p;busy=false;
+  }
+
+  async function disturb(){
+    await whenIdle();busy=true;started=true;
+    const i=(rnd()*N)|0,c=cards[i],o={r:c.r,s:c.s},g=goal(),s=stats();
+    // Störung in die Ecke, die am weitesten vom Ziel (ohne Ziel: vom Durchschnitt) entfernt ist
+    const ref=g||{r:s.mr,s:s.ms},t={r:ref.r<0.5?0.98:0.02,s:ref.s<0.5?0.95:0.05};
+    cards.forEach(x=>{if(x.st!=='hit')x.st='';});c.st='hit';c.showD=false;active(0);
+    await tween(450,e=>{c.r=o.r+(t.r-o.r)*e;c.s=o.s+(t.s-o.s)*e;draw();});
+    phase=0;busy=false;
+    say('⚡ Störung: Karte '+(i+1)+' steht jetzt auf Rot '+fmt(c.r)+' · Größe '+fmt(c.s)+'. '+(g
+      ?'Sie liegt weit weg vom Ziel und fliegt beim nächsten Bewerten raus. Das ist die „Selbstreparatur“ aus dem Video: ein Sollwert, kein Gedächtnis.'
+      :'Ohne Ziel fliegt niemand raus. Die gestörte Karte wird eingemischt und verschiebt den gemeinsamen Durchschnitt. Der alte Zustand kommt nicht zurück.'));
+  }
+  async function setGoal(k){
+    await whenIdle();goalKey=k;started=true;phase=0;active(0);
+    cards.forEach(c=>{if(c.st!=='hit')c.st='';c.showD=false;});
+    document.querySelectorAll('.seg [data-goal]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.goal===k?'true':'false'));
+    draw();const sp=stats().sp;
+    say(k==='A'?'Ziel: lila, groß (Rot 0,50 · Größe 0,72), wie in Labor 1. Die Karten laufen dorthin.'
+       :k==='B'?'Ziel verschoben auf rot, klein (Rot 0,90 · Größe 0,30). Die Karten laufen jetzt dorthin. Einen „Urzustand“ merkt sich das System nicht, es kennt nur den Sollwert im Regelsystem.'+(sp<0.15?' Weil die Karten schon fast gleich sind, kommen sie nur in kleinen Schritten voran: neue Vielfalt entsteht bloß noch durch das Rauschen.':'')
+       :'Kein Ziel, wie in Labor 2 und 4. Das Regelsystem ist aus, es wird nur noch gemischt. Die Karten werden einander ähnlich, aber keinem festen Wert.');
+  }
+  async function reset(){
+    playing=false;setPlay();await whenIdle();
+    rnd=mulberry32(20261013);spare=null;cards=START.map(([r,s])=>({r,s,st:'',showD:false}));
+    goalKey='A';round=0;phase=0;kids=null;keep=null;hist=[];started=false;
+    document.querySelectorAll('.seg [data-goal]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.goal==='A'?'true':'false'));
+    active(0);draw();chart();
+    say('Startzustand wie im Video: 7 Karten, blau und rot, klein bis groß. Drück „▶ Abspielen“ oder geh mit „Schritt ›“ einzeln durch.');
+  }
+  function setPlay(){$('aPlay').textContent=playing?'⏸ Pause':'▶ Abspielen';}
+  async function play(){if(playing){playing=false;setPlay();return;}playing=true;setPlay();
+    while(playing){await step();if(playing)await sleep((RM?900:450)/speed);}}
+
+  // ---------- Verlauf ----------
+  const W=420,H=180,ML=34,MR=12,MT=10,MB=24,C1='#199e70',C2='#9085e9';
+  let view=null;
+  function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e;}
+  function chart(){
+    const sv=$('aSvg');sv.textContent='';
+    const last=hist.length?hist[hist.length-1].n:0,x1=Math.max(10,last),x0=Math.max(0,x1-40);
+    let mx=0;hist.forEach(h=>{if(h.n>=x0){mx=Math.max(mx,h.sp,h.d||0);}});const y1=Math.max(0.5,Math.ceil(mx*10)/10);
+    const X=n=>ML+(n-x0)/(x1-x0)*(W-ML-MR),Y=v=>MT+(1-v/y1)*(H-MT-MB);
+    view={x0,x1,X,Y};
+    for(let k=0;k<=4;k++){const v=y1*k/4,y=Y(v);el('line',{x1:ML,x2:W-MR,y1:y,y2:y,stroke:k?'#1e293b':'#334155','stroke-width':1},sv);
+      el('text',{x:ML-6,y:y+4,'text-anchor':'end','font-size':11,fill:'#93a4bd'},sv).textContent=v.toFixed(2).replace('.',',');}
+    [x0,x1].forEach((n,k)=>{el('text',{x:X(n),y:H-6,'text-anchor':k?'end':'start','font-size':11,fill:'#93a4bd'},sv).textContent='Runde '+n;});
+    const hs=hist.filter(h=>h.n>=x0);
+    [['d',C1],['sp',C2]].forEach(([key,col])=>{let d='',pen=false;hs.forEach(h=>{const v=h[key];if(v==null){pen=false;return;}d+=(pen?'L':'M')+X(h.n).toFixed(1)+' '+Y(v).toFixed(1);pen=true;});
+      if(d)el('path',{d,fill:'none',stroke:col,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'},sv);
+      const lh=hs.length?hs[hs.length-1]:null;if(lh&&lh[key]!=null)el('circle',{cx:X(lh.n),cy:Y(lh[key]),r:4,fill:col,stroke:'#111726','stroke-width':2},sv);});
+    el('line',{id:'aHair',x1:0,x2:0,y1:MT,y2:H-MB,stroke:'#93a4bd','stroke-width':1,visibility:'hidden'},sv);
+    const h=hist[hist.length-1];
+    $('aNow').textContent=h?'Runde '+h.n+': Abstand zum Ziel '+fmt(h.d)+' · Streuung '+fmt(h.sp)+' · Durchschnitt Rot '+fmt(h.mr)+' / Größe '+fmt(h.ms):'Der Verlauf beginnt mit dem ersten Messen.';
+  }
+  function hover(ev){
+    if(!view||!hist.length)return;const sv=$('aSvg'),bb=sv.getBoundingClientRect(),x=(ev.clientX-bb.left)/bb.width*W;
+    let best=null;hist.forEach(h=>{if(h.n<view.x0)return;const dx=Math.abs(view.X(h.n)-x);if(!best||dx<best.dx)best={dx,h};});
+    if(!best)return;const hx=view.X(best.h.n),hair=$('aHair');hair.setAttribute('x1',hx);hair.setAttribute('x2',hx);hair.setAttribute('visibility','visible');
+    const tip=$('aTip');tip.textContent='';
+    const b=document.createElement('b');b.textContent='Runde '+best.h.n;tip.appendChild(b);
+    [['Abstand zum Ziel',best.h.d,C1],['Streuung',best.h.sp,C2]].forEach(([lab,v,col])=>{const d=document.createElement('div');
+      const i=document.createElement('i');i.style.cssText='display:inline-block;width:12px;height:2px;margin-right:6px;vertical-align:middle;background:'+col;
+      d.appendChild(i);d.appendChild(document.createTextNode(fmt(v)+'  '+lab));tip.appendChild(d);});
+    tip.style.display='block';const cb=$('aChart').getBoundingClientRect(),px=hx/W*bb.width,tw=tip.offsetWidth;
+    tip.style.left=(bb.left-cb.left+Math.min(Math.max(0,px+10),bb.width-tw))+'px';tip.style.top=(bb.top-cb.top+6)+'px';
+  }
+  function unhover(){$('aTip').style.display='none';const h=$('aHair');if(h)h.setAttribute('visibility','hidden');}
+
+  // ---------- Aufbau ----------
+  for(let i=0;i<N;i++){const tr=$('aTab').insertRow();for(let k=0;k<5;k++)tr.insertCell();
+    const sw=document.createElement('span');sw.className='sw';tr.cells[0].appendChild(sw);tr.cells[0].appendChild(document.createTextNode(String(i+1)));}
+  $('aPlay').onclick=play;
+  $('aStep').onclick=()=>{if(playing){playing=false;setPlay();}step();};
+  $('aDist').onclick=disturb;
+  $('aReset').onclick=reset;
+  $('aSpeed').onclick=()=>{speed=speed===1?3:1;$('aSpeed').textContent='Tempo '+speed+'×';};
+  document.querySelectorAll('.seg [data-goal]').forEach(b=>{b.onclick=()=>setGoal(b.dataset.goal);});
+  const sv=$('aSvg');sv.addEventListener('pointermove',hover);sv.addEventListener('pointerdown',hover);sv.addEventListener('pointerleave',unhover);
+  reset();
+})();
+</script>
 </body>
 </html>
