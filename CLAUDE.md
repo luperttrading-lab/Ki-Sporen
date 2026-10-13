@@ -45,6 +45,12 @@ Direkt auf `main` committen und pushen, keine Feature-Branches. Grund: Das Lösc
 von Remote-Branches ist in den Cloud-Sitzungen gesperrt (403), sonst bleiben leere
 Branches liegen.
 
+## Antwortschluss
+
+Jede Antwort endet mit dem anklickbaren Link zur Seite, um die es ging (z. B.
+`https://luperttrading-lab.github.io/Ki-Sporen/sporen_labor.html`), sonst zur Startseite.
+Der Link steht direkt über der Kostenzeile; die Kostenzeile bleibt die letzte Zeile.
+
 ## Kostenzeile
 
 Das Skript liegt in der Kostenzeilen-Skill, nicht im Repo. Nicht nach `tools/` kopieren,
