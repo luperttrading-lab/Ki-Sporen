@@ -197,7 +197,7 @@
       hell, der Durchschnitt ist 0,8, also wird die Stelle hell.</li>
     <li><b>Die Fehler mitteln sich heraus.</b> Sitzen die Kopierfehler an verschiedenen Stellen, liegt an jeder Stelle nur ein
       kleiner Teil der Geräte falsch. Dann ist das Mehrheitsbild der Pilz, auch wenn keine einzelne Spore mehr heil ist.</li>
-    <li><b>Wann es kippt.</b> Liegt an einer Stelle mindestens die Hälfte der Geräte falsch, hat das Original dort keine Mehrheit mehr,
+    <li><b>Wann es kippt.</b> Liegt an einer Stelle mindestens die Hälfte der befallenen Geräte falsch, hat das Original dort keine Mehrheit mehr,
       und die Stelle wird rot. Das passiert, wenn eine Störung mehr als die Hälfte trifft (Versuch C), oder wenn sich ohne Korrektur über sehr viele
       Kopien so viele Fehler ansammeln, dass an einer Stelle die Hälfte erreicht ist. Bei 2 % Fehlerrate passiert das nach 100 Runden in 12 von 20 Zufallsläufen.</li>
   </ol>
@@ -431,7 +431,7 @@ function spMeasure(w,replace){
     const hm=$('dHeat');if(!hm.children.length)for(let k=0;k<64;k++)hm.appendChild(document.createElement('span'));
     for(let k=0;k<64;k++){const c=hm.children[k],kp=kipped(wr[k],n);c.style.background=pixColor(k,wr[k],n);
       c.style.color=kp?'#fff':n&&SP.ORIG[k]?'#334155':'#93a4bd';c.style.fontWeight=kp?'700':'500';c.textContent=n?wr[k]:'';}
-    $('dLeg').textContent=n?'Rot heißt gekippt: ab '+thr+' von '+n+' Geräten liegt dort mindestens die Hälfte falsch.':'Kein Gerät befallen.';
+    $('dLeg').textContent=n?'Rot heißt gekippt: ab '+thr+' von '+n+' befallenen Geräten liegt dort mindestens die Hälfte falsch. Freie Geräte stimmen nicht mit.':'Kein Gerät befallen.';
     // feste Zeilen, damit nichts springt
     const pc=v=>fmt(v,1)+' %';
     const rows=[
@@ -440,7 +440,7 @@ function spMeasure(w,replace){
       ['Falsch insgesamt',n?tot+' Pixel':'–'],
       ['Je Stelle im Schnitt',n?fmt(tot/64,1)+' Geräte ('+Math.round(tot/64/n*100)+' %)':'–'],
       ['Schlechteste Stelle',n&&mx?'Z. '+((mk>>3)+1)+', Sp. '+((mk%8)+1)+': '+mx+' ('+Math.round(mx/n*100)+' %)':'–'],
-      ['Gekippt ab',n?thr+' von '+n:'–'],
+      ['Gekippt ab',n?thr+' von '+n+' befallenen':'–'],
       ['Gekippt',n?(m.cons?m.cons+(m.cons===1?' Stelle':' Stellen')+' ✗':'keine ✓'):'–']];
     const tb=$('dTab');if(!tb.children.length)rows.forEach(()=>{const dt=document.createElement('dt'),dd=document.createElement('dd');tb.appendChild(dt);tb.appendChild(dd);});
     rows.forEach((r,j)=>{tb.children[2*j].textContent=r[0];tb.children[2*j+1].textContent=r[1];});
