@@ -118,7 +118,7 @@
       <svg id="csv" viewBox="0 0 640 230" role="img" aria-label="Anteil intakter Sporen über die Runden, je Strategie"></svg>
       <div class="tip" id="tip"></div>
     </div>
-    <p class="hint">Anteil der befallenen Geräte, deren Bauplan exakt dem Original entspricht. ⚡ markiert eine Störung.</p>
+    <p class="hint">Anteil der befallenen Geräte, deren Bauplan exakt dem Original entspricht. ⚡ markiert eine Störung. Liegen Linien übereinander, sieht man sie als ineinanderliegende Bänder; antippen zeigt alle Werte.</p>
   </div>
 
   <h2>Versuche</h2>
@@ -301,7 +301,7 @@ function spMeasure(w,replace){
     events.forEach(e=>{const x=X(e.round);el('line',{x1:x,x2:x,y1:MT,y2:CH-MB,stroke:'#facc15','stroke-width':1,'stroke-dasharray':'4 4'},sv);
       el('text',{x:x+4,y:MT+11,'font-size':11,fill:'#facc15'},sv).textContent='⚡ '+Math.round(e.f*100)+' %';});
     W.forEach((w,i)=>{let d='';w.hist.forEach((h,j)=>{d+=(j?'L':'M')+X(h.round).toFixed(1)+' '+Y(h.ok).toFixed(1);});
-      el('path',{d,fill:'none',stroke:STR[i].c,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'},sv);});
+      el('path',{d,fill:'none',stroke:STR[i].c,'stroke-width':[6.5,4.5,3,1.8][i],'stroke-linejoin':'round','stroke-linecap':'round'},sv);});  // gestaffelte Breiten: übereinanderliegende Linien bleiben als Bänder sichtbar
     el('line',{id:'hair',x1:0,x2:0,y1:MT,y2:CH-MB,stroke:'#93a4bd','stroke-width':1,visibility:'hidden'},sv);}
   function hover(ev){if(!view)return;const sv=$('csv'),bb=sv.getBoundingClientRect(),x=(ev.clientX-bb.left)/bb.width*CW;
     let n=Math.round(view.x0+(x-ML)/(CW-ML-MR)*(view.x1-view.x0));n=Math.max(0,Math.min(W[0].round,n));
