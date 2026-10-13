@@ -59,7 +59,13 @@
   .dnow p{margin:6px 0 10px}
   .heat{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:100%;max-width:288px}
   .heat span{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-variant-numeric:tabular-nums;border-radius:3px}
-  .heat span.on{box-shadow:inset 0 0 0 1.5px rgba(219,229,243,.55)}
+  .dnow b:first-child{display:block;margin-bottom:8px}
+  .dtab{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:10px 0 0;font-size:13px;font-variant-numeric:tabular-nums}
+  .dtab dt{color:var(--mut)}
+  .dtab dd{margin:0;color:#dbe5f3;white-space:nowrap}
+  .dtab dd.ok{color:#4ade80}.dtab dd.no{color:#f87171}
+  .hlg{min-height:3em}
+  .pn .st{min-height:2.9em}
   .hlg{font-size:12px;color:var(--mut);margin:8px 0 0}
   .dnote{font-size:13px;color:var(--mut);margin:12px 0 14px}
   .pn .mc{width:40px;height:40px;image-rendering:pixelated;border-radius:4px;flex:none;border:1px solid var(--line)}
@@ -188,18 +194,17 @@
     <li><b>Abstimmung pro Pixel.</b> Für jede der 64 Stellen zählt, welchen Wert die meisten befallenen Geräte dort haben:
       hell oder dunkel. Dieser Wert kommt ins Mehrheitsbild.</li>
     <li><b>Dasselbe wie ein gerundeter Durchschnitt.</b> Hell = 1, dunkel = 0. Beispiel: 8 von 10 Geräten sind an einer Stelle
-      hell, der Durchschnitt ist 0,8, also wird die Stelle hell. Bei genau 0,5 gilt dunkel.</li>
+      hell, der Durchschnitt ist 0,8, also wird die Stelle hell.</li>
     <li><b>Die Fehler mitteln sich heraus.</b> Sitzen die Kopierfehler an verschiedenen Stellen, liegt an jeder Stelle nur ein
       kleiner Teil der Geräte falsch. Dann ist das Mehrheitsbild der Pilz, auch wenn keine einzelne Spore mehr heil ist.</li>
-    <li><b>Wann es kippt.</b> Liegt an einer Stelle mehr als die Hälfte der Geräte falsch, gewinnt der Fehler, und die Stelle wird
-      rot. Das passiert, wenn eine Störung mehr als die Hälfte trifft (Versuch C), oder wenn sich ohne Korrektur über sehr viele
+    <li><b>Wann es kippt.</b> Liegt an einer Stelle mindestens die Hälfte der Geräte falsch, hat das Original dort keine Mehrheit mehr,
+      und die Stelle wird rot. Das passiert, wenn eine Störung mehr als die Hälfte trifft (Versuch C), oder wenn sich ohne Korrektur über sehr viele
       Kopien so viele Fehler ansammeln, dass an einer Stelle die Hälfte erreicht ist. Bei 2 % Fehlerrate passiert das nach 100 Runden in 12 von 20 Zufallsläufen.</li>
   </ol>
-  <div class="dnow"><b>Jetzt in diesem Feld</b>
-    <p id="dCalc"></p>
-    <div class="heat" id="dHeat" role="img" aria-label="Anteil falscher Geräte pro Stelle"></div>
-    <p class="hlg">Zahl in jedem Feld: Prozent der Geräte, die an dieser Stelle falsch liegen. Je röter, desto näher an 50 %; ab über 50 %
-      kippt die Stelle. Hell umrandet: die hellen Pixel des Pilzes.</p>
+  <div class="dnow"><b>Jetzt in diesem Feld: das Mehrheitsbild, vergrößert</b>
+    <div class="heat" id="dHeat" role="img" aria-label="Mehrheitsbild vergrößert, mit Zahl der falschen Geräte je Stelle"></div>
+    <p class="hlg"><span>Zahl: wie viele Geräte an dieser Stelle falsch liegen.</span> <span id="dLeg"></span></p>
+    <dl class="dtab" id="dTab"></dl>
   </div>
   <p class="dnote"><b>Wozu das gehört:</b> Die Angleichung mit Zentrale setzt alle Geräte auf genau dieses Mehrheitsbild. Die
     Angleichung mit Nachbarn stimmt nur mit bis zu 4 Nachbarn ab; dort kann die Mehrheit falsch liegen, obwohl das Gesamtbild stimmt.</p>
@@ -268,7 +273,8 @@ function spDisturb(w,frac){
 function spMeasure(w,replace){
   const {N,L}=SP;let n=0,ok=0,err=0;const c=new Int32Array(L);
   for(let i=0;i<N;i++){if(!w.inf[i])continue;n++;let e=0;for(let k=0;k<L;k++){const v=w.code[i*L+k];c[k]+=v;if(v!==SP.ORIG[k])e++;}err+=e;if(!e)ok++;}
-  let cons=0;for(let k=0;k<L;k++)if(n&&((2*c[k]>n?1:0)!==SP.ORIG[k]))cons++;
+  // gekippt: das Original hat an dieser Stelle keine echte Mehrheit mehr (mindestens die Hälfte falsch)
+  let cons=0;for(let k=0;k<L;k++){const ok=SP.ORIG[k]?c[k]:n-c[k];if(n&&2*ok<=n)cons++;}
   const m={round:w.round,n,ok:n?ok/n:0,err:n?err/n:0,cons};
   if(replace&&w.hist.length&&w.hist[w.hist.length-1].round===w.round)w.hist[w.hist.length-1]=m;else w.hist.push(m);
   w.m=m;return m;}
@@ -321,9 +327,13 @@ function spMeasure(w,replace){
     add(' · Fehler je Spore '+fmt(m.err,2));
     if(w.strat==='pruef'&&w.copies)add(' · Versuche je Kopie '+fmt(w.tries/w.copies,2));}
   // Mehrheitsbild: für jede der 64 Stellen der Wert, den mehr als die Hälfte der befallenen Geräte hat (wie in spMeasure)
+  // Falsche Geräte je Stelle; gekippt, wenn mindestens die Hälfte falsch liegt (wie spMeasure)
+  function wrongCounts(w){const wr=new Int32Array(64);for(let d=0;d<SP.N;d++)if(w.inf[d])for(let k=0;k<64;k++)if(w.code[d*64+k]!==SP.ORIG[k])wr[k]++;return wr;}
+  const kipped=(wr,n)=>n>0&&2*wr>=n;
+  const pixColor=(k,wr,n)=>!n?'#0d1320':kipped(wr,n)?'#ef4444':SP.ORIG[k]?'#dbe5f3':'#1a2333';
   function major(i){const w=W[i],m=w.m,cx=$('m'+i).getContext('2d'),mt=$('mt'+i);mt.textContent='';
-    const c=new Int32Array(64);for(let d=0;d<SP.N;d++)if(w.inf[d])for(let k=0;k<64;k++)c[k]+=w.code[d*64+k];
-    for(let k=0;k<64;k++){const v=m.n&&2*c[k]>m.n?1:0,o=SP.ORIG[k];cx.fillStyle=!m.n?'#0d1320':v===o?(v?'#dbe5f3':'#1a2333'):'#ef4444';cx.fillRect(k%8,k>>3,1,1);}
+    const wr=wrongCounts(w);
+    for(let k=0;k<64;k++){cx.fillStyle=pixColor(k,wr[k],m.n);cx.fillRect(k%8,k>>3,1,1);}
     const b=document.createElement('b');b.textContent='Mehrheitsbild aller Geräte';mt.appendChild(b);mt.appendChild(document.createElement('br'));
     const s=document.createElement('span');
     if(!m.n)s.textContent='keine Geräte befallen';
@@ -415,24 +425,26 @@ function spMeasure(w,replace){
   let dlgI=null;const dlg=$('dlg');
   function fillDlg(i){const w=W[i],m=w.m,n=m.n;
     $('dFeld').textContent='Feld: '+STR[i].t+' · Runde '+w.round;
-    const wrong=new Int32Array(64);for(let d=0;d<SP.N;d++)if(w.inf[d])for(let k=0;k<64;k++)if(w.code[d*64+k]!==SP.ORIG[k])wrong[k]++;
-    let tot=0,mx=0,mk=0;for(let k=0;k<64;k++){tot+=wrong[k];if(wrong[k]>mx){mx=wrong[k];mk=k;}}
-    const cl=$('dCalc');
-    if(!n){cl.textContent='In diesem Feld ist gerade kein Gerät befallen.';}
-    else if(!tot){cl.textContent=n+' befallene Geräte, alle fehlerfrei. An jeder Stelle stimmen alle gleich ab, also ist das Mehrheitsbild der Pilz.';}
-    else{const avg=tot/64,half=n/2;
-      let s=n+' befallene Geräte mit im Schnitt '+fmt(m.err,2)+' falschen Pixeln, zusammen '+tot+' falsche Pixel. '+
-        'Verteilt auf 64 Stellen sind das im Schnitt '+fmt(avg,1)+' falsche Geräte pro Stelle ('+fmt(avg/n*100,1)+' %). ';
-      s+=mx?'Am schlechtesten steht Zeile '+((mk>>3)+1)+', Spalte '+((mk%8)+1)+' mit '+mx+' von '+n+' Geräten ('+Math.round(mx/n*100)+' %). '
-           :'Keine Stelle hat einen Fehler. ';
-      s+='Kippen würde eine Stelle erst ab '+(Math.floor(half)+1)+' von '+n+' Geräten'+
-        (n%2?'. ':' (bei genau '+half+' gilt die Gleichstand-Regel aus Punkt 2). ');
-      s+=m.cons?m.cons+(m.cons===1?' Stelle ist':' Stellen sind')+' gekippt; im Mehrheitsbild sind sie rot.':'Keine Stelle ist gekippt, also ist das Mehrheitsbild der Pilz.';
-      cl.textContent=s;}
+    const wr=wrongCounts(w);let tot=0,mx=0,mk=0;for(let k=0;k<64;k++){tot+=wr[k];if(wr[k]>mx){mx=wr[k];mk=k;}}
+    const thr=Math.ceil(n/2);
+    // vergrößertes Mehrheitsbild: Farbe wie im kleinen Bild, Zahl = falsche Geräte an dieser Stelle
     const hm=$('dHeat');if(!hm.children.length)for(let k=0;k<64;k++)hm.appendChild(document.createElement('span'));
-    for(let k=0;k<64;k++){const f=n?wrong[k]/n:0,q=Math.min(1,f/0.5),c=hm.children[k];
-      c.style.background='rgb('+[26+(239-26)*q,35+(68-35)*q,51+(68-51)*q].map(Math.round).join(',')+')';
-      c.style.color=q>0.5?'#fff':'#93a4bd';c.textContent=Math.round(f*100);c.className=SP.ORIG[k]?'on':'';}}
+    for(let k=0;k<64;k++){const c=hm.children[k],kp=kipped(wr[k],n);c.style.background=pixColor(k,wr[k],n);
+      c.style.color=kp?'#fff':n&&SP.ORIG[k]?'#334155':'#93a4bd';c.style.fontWeight=kp?'700':'500';c.textContent=n?wr[k]:'';}
+    $('dLeg').textContent=n?'Rot heißt gekippt: ab '+thr+' von '+n+' Geräten liegt dort mindestens die Hälfte falsch.':'Kein Gerät befallen.';
+    // feste Zeilen, damit nichts springt
+    const pc=v=>fmt(v,1)+' %';
+    const rows=[
+      ['Befallen',n?n+' Geräte':'–'],
+      ['Falsch je Spore',n?fmt(m.err,2)+' Pixel':'–'],
+      ['Falsch insgesamt',n?tot+' Pixel':'–'],
+      ['Je Stelle im Schnitt',n?fmt(tot/64,1)+' Geräte ('+Math.round(tot/64/n*100)+' %)':'–'],
+      ['Schlechteste Stelle',n&&mx?'Z. '+((mk>>3)+1)+', Sp. '+((mk%8)+1)+': '+mx+' ('+Math.round(mx/n*100)+' %)':'–'],
+      ['Gekippt ab',n?thr+' von '+n:'–'],
+      ['Gekippt',n?(m.cons?m.cons+(m.cons===1?' Stelle':' Stellen')+' ✗':'keine ✓'):'–']];
+    const tb=$('dTab');if(!tb.children.length)rows.forEach(()=>{const dt=document.createElement('dt'),dd=document.createElement('dd');tb.appendChild(dt);tb.appendChild(dd);});
+    rows.forEach((r,j)=>{tb.children[2*j].textContent=r[0];tb.children[2*j+1].textContent=r[1];});
+    tb.children[13].className=n&&m.cons?'no':'ok';}
   function openDlg(i){dlgI=i;fillDlg(i);if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
     dlg.scrollTop=0;$('dTitle').focus({preventScroll:true});}   // oben anfangen, nicht beim Schließen-Knopf
   function closeDlg(){dlgI=null;if(typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open');}
