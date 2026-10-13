@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netzwerk-Labor Cluster</title>
+<style>
+  :root{
+    --bg:#0a0e17; --panel:#111726; --panel2:#0d1320; --line:#1e293b;
+    --tx:#e5edf7; --mut:#93a4bd; --mut2:#64748b;
+    --S:#3b82f6; --E:#f59e0b; --I:#ef4444; --Q:#2dd4bf; --acc:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px}
+  .kicker{letter-spacing:.14em;text-transform:uppercase;font-size:11px;font-weight:700;color:var(--acc);margin:0 0 10px}
+  h1{font-size:30px;line-height:1.15;margin:0 0 8px;font-weight:800}
+  .sub{color:var(--mut);margin:0;max-width:72ch}
+  .grid{display:grid;grid-template-columns:1fr 330px;gap:18px;margin-top:22px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h2{font-size:14px;margin:0 0 14px;font-weight:700}
+  canvas{width:100%;display:block;border-radius:8px;background:#070b12}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:13px;color:var(--mut)}
+  .legend b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+  .controls{display:flex;flex-direction:column;gap:15px}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .row label{font-size:13px;color:var(--mut)}
+  .row .val{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px}
+  input[type=range]{width:100%;accent-color:var(--acc);margin-top:6px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  button{background:#16213a;color:var(--tx);border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:13px;font-weight:600;cursor:pointer}
+  button.primary{background:var(--acc);color:#071020;border-color:var(--acc)}
+  button:hover{filter:brightness(1.12)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{border:0;border-radius:0;flex:1;background:transparent}
+  .seg button.on{background:var(--Q);color:#05211d}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+  .stat .k{font-size:11px;color:var(--mut);margin-bottom:4px}
+  .stat .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:12px;font-weight:600;color:var(--mut)}
+  .note{color:var(--mut);font-size:13px;margin-top:14px;max-width:85ch}
+  .note b{color:#c9d6e8}
+  .warn{border-left:3px solid var(--Q);padding-left:12px}
+  .pill{display:inline-block;font-size:11px;font-weight:700;color:var(--Q);border:1px solid #1d3b37;background:#0c1d1b;border-radius:999px;padding:2px 9px;vertical-align:middle;margin-left:8px}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin-top:4px}
+  td,th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600}
+  td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">Experiment · Ausbreitung · Netzwerk</p>
+  <h1>Netzwerk-Labor: Ausbreitung auf geclustertem Graphen <span class="pill">defensiv</span></h1>
+  <p class="sub">Dieselbe SEIQ-Dynamik wie im Mean-Field-Labor, aber jetzt auf einem echten Geräte-Graphen:
+  Cluster (Subnetze / Gerätefamilien) mit dichten internen und wenigen externen Verbindungen. Der Regler
+  <b>Kopplung</b> steuert, wie durchlässig die Cluster-Grenzen sind — und zeigt die Perkolationsschwelle,
+  unterhalb derer der Wurm lokal erstickt.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Geräte-Graph · Zustand je Knoten</h2>
+      <canvas id="net" height="430"></canvas>
+      <div class="legend">
+        <span><b style="background:var(--S)"></b>S anfällig</span>
+        <span><b style="background:var(--E)"></b>E infiltriert</span>
+        <span><b style="background:var(--I)"></b>I infektiös</span>
+        <span><b style="background:var(--Q)"></b>Q Quarantäne</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Steuerung</h2>
+      <div class="controls">
+        <div>
+          <div class="row"><label>Kopplung f — Anteil Verbindungen über Cluster-Grenzen</label><span class="val" id="vf"></span></div>
+          <input type="range" id="f" min="0" max="1" step="0.01" value="0.08">
+          <div class="note" style="margin-top:4px;font-size:12px">f=0 isolierte Subnetze · f=1 vollständig durchmischt</div>
+        </div>
+        <div>
+          <div class="row"><label>β — Übertragung je infektiösem Gerät/Tag</label><span class="val" id="vbeta"></span></div>
+          <input type="range" id="beta" min="0.05" max="2" step="0.01" value="0.67">
+        </div>
+        <div>
+          <div class="row"><label>σ — Setup-Tempo (E→I)</label><span class="val" id="vsigma"></span></div>
+          <input type="range" id="sigma" min="0.1" max="1.2" step="0.01" value="0.61">
+        </div>
+        <div>
+          <div class="row"><label>γ — Entfernung (I→Q)</label><span class="val" id="vgamma"></span></div>
+          <div class="seg" id="segNotify">
+            <button class="on" data-gamma="0.1804">mit Benachrichtigung</button>
+            <button data-gamma="0.0962">ohne</button>
+          </div>
+        </div>
+        <div>
+          <div class="row"><label>N — Geräte · C — Cluster</label><span class="val" id="vN"></span></div>
+          <input type="range" id="N" min="800" max="4000" step="200" value="3000">
+        </div>
+        <div class="btns">
+          <button class="primary" id="play">▶ Start</button>
+          <button id="step">1 Schritt</button>
+          <button id="reset">↻ Neu</button>
+          <button id="reseed">🎲 Würfeln</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:18px">
+    <div class="card">
+      <h2>Infektiöser Anteil über die Zeit</h2>
+      <canvas id="chart" height="240"></canvas>
+      <div class="legend">
+        <span><b style="background:var(--I)"></b>Netzwerk I(t)</span>
+        <span><b style="background:var(--mut)"></b>Mean-Field I(t) (Referenz, perfekte Durchmischung)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Live-Messwerte</h2>
+      <div class="stats">
+        <div class="stat"><div class="k">Tag</div><div class="v" id="sDay">0</div></div>
+        <div class="stat"><div class="k">jetzt infektiös</div><div class="v" id="sI">0%</div></div>
+        <div class="stat"><div class="k">jemals infiziert</div><div class="v" id="sEver">0%</div></div>
+        <div class="stat"><div class="k">Cluster erreicht (≥50%)</div><div class="v" id="sClu">0</div></div>
+        <div class="stat"><div class="k">Peak Netzwerk</div><div class="v" id="sPk">0%</div></div>
+        <div class="stat"><div class="k">Peak Mean-Field</div><div class="v" id="sPkMF">0%</div></div>
+      </div>
+      <div class="note warn" style="margin-top:14px">
+        Schiebe <b>Kopplung</b> langsam hoch: unterhalb einer Schwelle (hier ≈ f&nbsp;0,04) bleibt der
+        Wurm im Startcluster und stirbt — die Cluster-Grenzen wirken wie Netzwerk-Segmentierung. Darüber
+        perkoliert er durch alle Cluster. Der Netzwerk-Peak bleibt stets <i>unter</i> dem Mean-Field, weil
+        endlicher Grad und Struktur die Ausbreitung bremsen.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h2>Modell & Kalibrierung</h2>
+    <table>
+      <tr><th>Baustein</th><th>Umsetzung</th></tr>
+      <tr><td>Graph</td><td>Stochastisches Blockmodell: C Cluster, mittlerer Grad ⟨k⟩≈12 konstant; f verschiebt Kanten von intra nach inter, ohne ⟨k⟩ zu ändern (nur Struktur variiert)</td></tr>
+      <tr><td>Übertragung je Kante</td><td>λ = β/⟨k⟩; ein anfälliges Gerät mit m infektiösen Nachbarn: P = 1−e^(−λ·Δt·m)</td></tr>
+      <tr><td>E→I, I→Q, Q→S</td><td>P = 1−e^(−σΔt), 1−e^(−γΔt), 1−e^(−ωΔt); Δt=0,25 Tage</td></tr>
+      <tr><td>Startkeim</td><td>5 infektiöse Geräte, alle im selben Cluster (lokaler „patient zero“)</td></tr>
+      <tr><td>Kalibrierung</td><td>β, σ, γ identisch zum Mean-Field-Labor (γ aus Mirai 92%/74%, σ aus Setup-Zeiten)</td></tr>
+    </table>
+    <p class="note"><b>Warum das realistischer und zugleich spekulativer ist.</b> Perfekte Durchmischung
+    (Mean-Field) überschätzt die Ausbreitung: reale Geräte sind geclustert, der Wurm muss erst eine
+    Cluster-Grenze überspringen. Das senkt Peak und Tempo und kann die Welle ganz stoppen. Spekulativ ist
+    die Graph-Struktur selbst — der Artikel liefert keine Topologie realer IoT-Netze, f ist deshalb ein
+    freier Regler. Diskrete, stochastische Simulation, vollständig offline im Browser. Keine operative
+    Anleitung, nur Ausbreitungs- und Abwehr-Dynamik.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const C_=getComputedStyle(document.documentElement);
+  const col={S:C_.getPropertyValue('--S').trim(),E:C_.getPropertyValue('--E').trim(),
+    I:C_.getPropertyValue('--I').trim(),Q:C_.getPropertyValue('--Q').trim(),
+    line:C_.getPropertyValue('--line').trim(),mut:C_.getPropertyValue('--mut').trim()};
+  const netC=$('net'),nx=netC.getContext('2d'),chC=$('chart'),cx=chC.getContext('2d');
+  const KDEG=12, DT=0.25, MAXD=200, TOK=0.35, H100=17500;
+  let P={f:0.08,beta:0.67,sigma:0.61,gamma:0.1804,omega:0,N:3000,C:24,seed:42};
+  let G=null, st=null, ever=null, pos=null, edges=null, day=0, peak=0, mf=null, mfPeak=0, Ihist=[], running=false, raf=0;
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  function build(){
+    const N=P.N, C=P.C, rnd=mulberry32(P.seed);
+    const comm=new Int32Array(N), per=Math.floor(N/C);
+    for(let i=0;i<N;i++)comm[i]=Math.min(C-1,Math.floor(i/per));
+    const members=Array.from({length:C},()=>[]); for(let i=0;i<N;i++)members[comm[i]].push(i);
+    const adj=Array.from({length:N},()=>new Set());
+    const half=KDEG/2, intra=Math.round(half*(1-P.f)), inter=Math.round(half*P.f);
+    for(let i=0;i<N;i++){const mem=members[comm[i]];
+      for(let e=0;e<intra;e++){const j=mem[(rnd()*mem.length)|0];if(j!==i){adj[i].add(j);adj[j].add(i);}}
+      for(let e=0;e<inter;e++){const j=(rnd()*N)|0;if(comm[j]!==comm[i]){adj[i].add(j);adj[j].add(i);}}}
+    const list=adj.map(s=>Int32Array.from(s));
+    let deg=0;for(let i=0;i<N;i++)deg+=list[i].length;
+    // layout: cluster centers on grid, gaussian jitter
+    const cols=Math.ceil(Math.sqrt(C)), rows=Math.ceil(C/cols);
+    const W=netC.clientWidth||760, H=430, pad=30;
+    const cw=(W-2*pad)/cols, ch=(H-2*pad)/rows, rad=Math.min(cw,ch)*0.34;
+    pos=new Float32Array(N*2);
+    const g2=()=>{let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*v);};
+    for(let i=0;i<N;i++){const c=comm[i],cxp=pad+cw*(c%cols)+cw/2,cyp=pad+ch*((c/cols)|0)+ch/2;
+      pos[i*2]=cxp+g2()*rad; pos[i*2+1]=cyp+g2()*rad;}
+    // sample edges for drawing
+    const es=[]; const want=Math.min(2500, deg/2);
+    for(let i=0;i<N&&es.length<want;i++){const nb=list[i];for(let q=0;q<nb.length;q++){const j=nb[q];if(j>i&&rnd()<want/(deg/2)){es.push(i,j);}}}
+    G={list,comm,meanDeg:deg/N,N,C,W,H}; edges=Int32Array.from(es);
+  }
+
+  function reset(rebuild){
+    if(rebuild)build();
+    st=new Uint8Array(G.N); ever=new Uint8Array(G.N);
+    let s=0;for(let i=0;i<G.N&&s<5;i++){if(G.comm[i]===0){st[i]=2;ever[i]=1;s++;}}
+    day=0; peak=0; Ihist=[];
+    mf=meanField(); mfPeak=mf.peak;
+    drawNet(); drawChart(); stats();
+  }
+
+  function meanField(){
+    const N=G.N; let S=N-5,E=0,I=5,Q=0,pk=0,series=[];
+    const d=(S,E,I,Q)=>{const inf=P.beta*S*I/N;return[-inf+P.omega*Q,inf-P.sigma*E,P.sigma*E-P.gamma*I,P.gamma*I-P.omega*Q];};
+    const steps=Math.round(MAXD/DT);
+    for(let n=0;n<=steps;n++){if(n%4===0)series.push(I/N); if(I>pk)pk=I;
+      const k1=d(S,E,I,Q),k2=d(S+DT/2*k1[0],E+DT/2*k1[1],I+DT/2*k1[2],Q+DT/2*k1[3]),
+        k3=d(S+DT/2*k2[0],E+DT/2*k2[1],I+DT/2*k2[2],Q+DT/2*k2[3]),k4=d(S+DT*k3[0],E+DT*k3[1],I+DT*k3[2],Q+DT*k3[3]);
+      S+=DT/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]);E+=DT/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]);
+      I+=DT/6*(k1[2]+2*k2[2]+2*k3[2]+k4[2]);Q+=DT/6*(k1[3]+2*k2[3]+2*k3[3]+k4[3]);}
+    return{peak:pk/N,series};
+  }
+
+  const rndStep=mulberry32(12345); // reseeded on reset via closure below
+  let stepRnd=mulberry32(P.seed^0x9e3779b9);
+
+  function tick(){
+    const N=G.N, lam=P.beta/G.meanDeg;
+    const pS=1-Math.exp(-P.sigma*DT),pG=1-Math.exp(-P.gamma*DT),pO=1-Math.exp(-P.omega*DT);
+    const nxt=st.slice();
+    for(let i=0;i<N;i++){const s=st[i];
+      if(s===0){let m=0;const nb=G.list[i];for(let q=0;q<nb.length;q++)if(st[nb[q]]===2)m++;
+        if(m){const p=1-Math.exp(-lam*DT*m);if(stepRnd()<p){nxt[i]=1;ever[i]=1;}}}
+      else if(s===1){if(stepRnd()<pS)nxt[i]=2;}
+      else if(s===2){if(stepRnd()<pG)nxt[i]=3;}
+      else if(s===3){if(P.omega>0&&stepRnd()<pO)nxt[i]=0;}}
+    st.set(nxt); day+=DT;
+    let cI=0;for(let i=0;i<N;i++)if(st[i]===2)cI++;
+    if(cI>peak)peak=cI; Ihist.push(cI/N);
+  }
+
+  function drawNet(){
+    const dpr=window.devicePixelRatio||1,W=G.W,H=G.H;
+    netC.width=W*dpr;netC.height=H*dpr;nx.setTransform(dpr,0,0,dpr,0,0);
+    nx.clearRect(0,0,W,H);
+    nx.strokeStyle='rgba(120,140,170,.07)';nx.lineWidth=1;nx.beginPath();
+    for(let e=0;e<edges.length;e+=2){const a=edges[e],b=edges[e+1];
+      nx.moveTo(pos[a*2],pos[a*2+1]);nx.lineTo(pos[b*2],pos[b*2+1]);}
+    nx.stroke();
+    const cc=[col.S,col.E,col.I,col.Q];
+    for(let i=0;i<G.N;i++){nx.fillStyle=cc[st[i]];
+      const r=st[i]===2?2.4:1.8;nx.fillRect(pos[i*2]-r,pos[i*2+1]-r,2*r,2*r);}
+  }
+
+  function drawChart(){
+    const dpr=window.devicePixelRatio||1,W=chC.clientWidth,H=240;
+    chC.width=W*dpr;chC.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);cx.clearRect(0,0,W,H);
+    const pad={l:42,r:10,t:10,b:22},pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+    const ymax=Math.max(0.12, mfPeak*1.15, peak/G.N*1.15);
+    cx.strokeStyle=col.line;cx.fillStyle=col.mut;cx.font='11px sans-serif';
+    for(let g=0;g<=4;g++){const yy=pad.t+ph*g/4;cx.beginPath();cx.moveTo(pad.l,yy);cx.lineTo(W-pad.r,yy);cx.stroke();
+      cx.fillText((ymax*(1-g/4)*100).toFixed(0)+'%',6,yy+3);}
+    for(let d=0;d<=MAXD;d+=50){const xx=pad.l+pw*d/MAXD;cx.fillText(d+'d',xx-6,H-6);}
+    const X=d=>pad.l+pw*d/MAXD, Y=v=>pad.t+ph*(1-v/ymax);
+    // mean-field dashed
+    cx.strokeStyle=col.mut;cx.lineWidth=1.4;cx.setLineDash([5,4]);cx.beginPath();
+    mf.series.forEach((v,i)=>{const d=i*1;i?cx.lineTo(X(d),Y(v)):cx.moveTo(X(d),Y(v));});cx.stroke();cx.setLineDash([]);
+    // network
+    cx.strokeStyle=col.I;cx.lineWidth=2.2;cx.beginPath();
+    Ihist.forEach((v,i)=>{const d=i*DT;i?cx.lineTo(X(d),Y(v)):cx.moveTo(X(d),Y(v));});cx.stroke();
+  }
+
+  function stats(){
+    const N=G.N;let cI=0,cE=0,cQ=0,ev=0;for(let i=0;i<N;i++){const s=st[i];if(s===2)cI++;else if(s===1)cE++;else if(s===3)cQ++;if(ever[i])ev++;}
+    const reach=new Array(G.C).fill(0),tot=new Array(G.C).fill(0);
+    for(let i=0;i<N;i++){tot[G.comm[i]]++;if(ever[i])reach[G.comm[i]]++;}
+    let cl=0;for(let c=0;c<G.C;c++)if(tot[c]&&reach[c]/tot[c]>=0.5)cl++;
+    $('sDay').textContent=Math.round(day);
+    $('sI').innerHTML=(cI/N*100).toFixed(1)+'%';
+    $('sEver').innerHTML=(ev/N*100).toFixed(1)+'%';
+    $('sClu').innerHTML=cl+' <small>/ '+G.C+'</small>';
+    $('sPk').innerHTML=(peak/N*100).toFixed(1)+'%';
+    $('sPkMF').innerHTML=(mfPeak*100).toFixed(1)+'%';
+  }
+
+  function frame(){
+    for(let k=0;k<3;k++){ if(day<MAXD) tick(); }
+    drawNet();drawChart();stats();
+    if(running && day<MAXD){raf=requestAnimationFrame(frame);}
+    else{running=false;$('play').textContent='▶ Start';}
+  }
+
+  function syncLabels(){
+    $('vf').textContent=P.f.toFixed(2);
+    $('vbeta').textContent=P.beta.toFixed(2);
+    $('vsigma').textContent=P.sigma.toFixed(2)+' /Tag';
+    $('vgamma').textContent=P.gamma.toFixed(3)+' /Tag';
+    $('vN').textContent=P.N+' · '+P.C;
+  }
+
+  function hardReset(rebuild){
+    cancelAnimationFrame(raf);running=false;$('play').textContent='▶ Start';
+    stepRnd=mulberry32(P.seed^0x9e3779b9);
+    reset(rebuild);
+  }
+
+  // wiring
+  $('f').addEventListener('input',e=>{P.f=+e.target.value;syncLabels();hardReset(true);});
+  $('beta').addEventListener('input',e=>{P.beta=+e.target.value;syncLabels();hardReset(false);});
+  $('sigma').addEventListener('input',e=>{P.sigma=+e.target.value;syncLabels();hardReset(false);});
+  $('N').addEventListener('input',e=>{P.N=+e.target.value;P.C=Math.max(6,Math.round(P.N/125));syncLabels();hardReset(true);});
+  $('segNotify').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    $('segNotify').querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    P.gamma=+b.dataset.gamma;syncLabels();hardReset(false);}));
+  $('play').addEventListener('click',()=>{if(running){running=false;cancelAnimationFrame(raf);$('play').textContent='▶ Start';}
+    else{if(day>=MAXD)hardReset(false);running=true;$('play').textContent='⏸ Pause';frame();}});
+  $('step').addEventListener('click',()=>{if(day<MAXD){tick();drawNet();drawChart();stats();}});
+  $('reset').addEventListener('click',()=>hardReset(true));
+  $('reseed').addEventListener('click',()=>{P.seed=(Math.random()*1e9)|0;hardReset(true);});
+  window.addEventListener('resize',()=>{drawNet();drawChart();});
+
+  syncLabels(); build(); reset(false);
+})();
+</script>
+</body>
+</html>
