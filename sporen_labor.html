@@ -48,6 +48,20 @@
   .pn .st .ok,.mj .ok{color:#4ade80}.pn .st .no,.mj .no{color:#f87171}
   .mj{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:12.5px;color:#cdd9ea;line-height:1.4}
   .mj b{font-weight:600;color:var(--mut)}
+  .ib{flex:none;width:30px;height:30px;padding:0;border-radius:50%;font-size:16px;line-height:28px;color:var(--acc);background:#16213a;border:1px solid #24324d;margin-left:auto}
+  dialog#dlg{background:var(--panel);color:var(--tx);border:1px solid #24324d;border-radius:14px;padding:18px 18px 16px;width:calc(100% - 32px);max-width:540px;max-height:86vh;overflow:auto}
+  dialog#dlg::backdrop{background:rgba(3,6,12,.72)}
+  dialog#dlg h3{margin:0 0 2px;font-size:18px}
+  .dsub{margin:0 0 12px;font-size:12.5px;color:var(--mut)}
+  dialog#dlg ol{margin:0 0 12px;padding-left:20px;font-size:14px;color:#cdd9ea}
+  dialog#dlg ol li{margin:0 0 8px}
+  .dnow{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--tq);border-radius:10px;padding:12px 14px;font-size:13.5px;color:#dbe5f3}
+  .dnow p{margin:6px 0 10px}
+  .heat{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:100%;max-width:288px}
+  .heat span{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-variant-numeric:tabular-nums;border-radius:3px}
+  .heat span.on{box-shadow:inset 0 0 0 1.5px rgba(219,229,243,.55)}
+  .hlg{font-size:12px;color:var(--mut);margin:8px 0 0}
+  .dnote{font-size:13px;color:var(--mut);margin:12px 0 14px}
   .pn .mc{width:40px;height:40px;image-rendering:pixelated;border-radius:4px;flex:none;border:1px solid var(--line)}
   .lg{display:flex;gap:6px 16px;font-size:12.5px;color:#cdd9ea;flex-wrap:wrap;margin-bottom:6px}
   .lg i{display:inline-block;width:16px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
@@ -170,6 +184,29 @@
       1 : 4 Milliarden unentdeckt. Gegen absichtliche Fälschung hilft sie nicht, dafür bräuchte es eine Signatur.</li>
   </ul></div>
 </div>
+<dialog id="dlg" aria-labelledby="dTitle">
+  <h3 id="dTitle" tabindex="-1" autofocus style="outline:none">Was ist das Mehrheitsbild?</h3>
+  <p class="dsub" id="dFeld"></p>
+  <ol>
+    <li><b>Abstimmung pro Pixel.</b> Für jede der 64 Stellen des Bauplans wird gezählt, welchen Wert die befallenen Geräte dort
+      haben, hell oder dunkel. Der Wert mit der Mehrheit kommt ins Mehrheitsbild.</li>
+    <li><b>Das ist ein gerundeter Durchschnitt.</b> Hell = 1, dunkel = 0. Liegt der Durchschnitt an einer Stelle über 0,5, wird sie
+      hell, sonst dunkel (bei genau 0,5 also dunkel). Die Labore im Video mitteln Zahlen; bei Bits ist das genau diese Abstimmung.</li>
+    <li><b>Warum das Bild stimmt, obwohl keine Spore heil ist.</b> Kopierfehler treffen meist verschiedene Stellen. An jeder einzelnen
+      Stelle liegt dann nur ein kleiner Teil der Geräte falsch, und die Mehrheit hat recht. Die Fehler mitteln sich heraus.</li>
+    <li><b>Wann es kippt.</b> Liegt an einer Stelle mehr als die Hälfte der Geräte falsch, gewinnt der Fehler die Abstimmung, und die
+      Stelle wird im Mehrheitsbild rot. Das passiert, wenn eine Störung mehr als die Hälfte trifft (Versuch C).</li>
+  </ol>
+  <div class="dnow"><b>Jetzt in diesem Feld</b>
+    <p id="dCalc"></p>
+    <div class="heat" id="dHeat" role="img" aria-label="Anteil falscher Geräte pro Stelle"></div>
+    <p class="hlg">Zahl in jedem Feld: Prozent der Geräte, die an dieser Stelle falsch liegen. Je röter, desto näher an 50 %; ab über 50 %
+      kippt die Stelle. Hell umrandet: die hellen Pixel des Pilzes.</p>
+  </div>
+  <p class="dnote">Die Angleichung mit Zentrale setzt alle Geräte auf genau dieses Mehrheitsbild. Die Angleichung mit Nachbarn stimmt
+    nur mit bis zu 4 Nachbarn ab. Dort kann die Mehrheit falsch liegen, obwohl das Gesamtbild stimmt.</p>
+  <button id="dClose" class="pri">Schließen</button>
+</dialog>
 <script>
 // CORE-START
 // Sporen-Labor: 64-Bit-Bauplan breitet sich über ein 12×12-Gitter aus, mit Kopierfehlern.
@@ -265,7 +302,7 @@ function spMeasure(w,replace){
   STR.forEach((s,i)=>{const d=document.createElement('div');d.className='pn';
     d.innerHTML='<h3><i style="background:'+s.c+'"></i>'+s.t+(s.tag?' <span>· '+s.tag+'</span>':'')+'</h3>'+
       '<p class="what" id="w'+i+'"></p><canvas id="c'+i+'" role="img" aria-label="Gitter der Geräte: '+s.t+'"></canvas><p class="st" id="s'+i+'"></p>'+
-      '<div class="mj"><canvas class="mc" id="m'+i+'" width="8" height="8" role="img" aria-label="Mehrheitsbild"></canvas><span id="mt'+i+'"></span></div>';
+      '<div class="mj"><canvas class="mc" id="m'+i+'" width="8" height="8" role="img" aria-label="Mehrheitsbild"></canvas><span id="mt'+i+'"></span><button class="ib" data-i="'+i+'" aria-label="Mehrheitsbild erklären">ⓘ</button></div>';
     $('panels').appendChild(d);
     const l=document.createElement('span');l.innerHTML='<i style="background:'+s.c+'"></i>'+s.t;$('lg').appendChild(l);});
   function texts(){const c=central();STR.forEach((s,i)=>{$('w'+i).textContent=s.d(c)+' Größe: '+s.size(c)+'.';});}
@@ -294,7 +331,7 @@ function spMeasure(w,replace){
     if(!m.n)s.textContent='keine Geräte befallen';
     else{s.textContent=m.cons?'weicht in '+m.cons+' Bit vom Original ab ✗':'= Original ✓';s.className=m.cons?'no':'ok';}
     mt.appendChild(s);}
-  function drawAll(){W.forEach((w,i)=>{drawGrid(i);stat(i);major(i);});$('rnd').textContent='Runde '+W[0].round;chart();}
+  function drawAll(){W.forEach((w,i)=>{drawGrid(i);stat(i);major(i);});$('rnd').textContent='Runde '+W[0].round;chart();if(dlgI!=null)fillDlg(dlgI);}
 
   // ---------- Ablauf ----------
   function reset(){W=STR.map(s=>spWorld(s.k,{mu:mu(),seed,central:central()}));events=[];texts();drawAll();}
@@ -376,6 +413,34 @@ function spMeasure(w,replace){
   document.querySelectorAll('.vs button').forEach(b=>{b.onclick=()=>versuch(b.dataset.v,b);});
   const sv=$('csv');sv.addEventListener('pointermove',hover);sv.addEventListener('pointerdown',hover);sv.addEventListener('pointerleave',unhover);
   let rt=0;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>W.forEach((w,i)=>drawGrid(i)),150);});
+  // ---------- Erklärfenster zum Mehrheitsbild ----------
+  let dlgI=null;const dlg=$('dlg');
+  function fillDlg(i){const w=W[i],m=w.m,n=m.n;
+    $('dFeld').textContent='Feld: '+STR[i].t+' · Runde '+w.round;
+    const wrong=new Int32Array(64);for(let d=0;d<SP.N;d++)if(w.inf[d])for(let k=0;k<64;k++)if(w.code[d*64+k]!==SP.ORIG[k])wrong[k]++;
+    let tot=0,mx=0,mk=0;for(let k=0;k<64;k++){tot+=wrong[k];if(wrong[k]>mx){mx=wrong[k];mk=k;}}
+    const cl=$('dCalc');
+    if(!n){cl.textContent='In diesem Feld ist gerade kein Gerät befallen.';}
+    else{const avg=tot/64,half=n/2;
+      let s=n+' befallene Geräte mit im Schnitt '+fmt(m.err,2)+' falschen Pixeln, zusammen '+tot+' falsche Pixel. '+
+        'Verteilt auf 64 Stellen sind das im Schnitt '+fmt(avg,1)+' falsche Geräte pro Stelle ('+fmt(avg/n*100,1)+' %). ';
+      s+=mx?'Am schlechtesten steht Zeile '+((mk>>3)+1)+', Spalte '+((mk%8)+1)+' mit '+mx+' von '+n+' Geräten ('+Math.round(mx/n*100)+' %). '
+           :'Keine Stelle hat einen Fehler. ';
+      s+='Kippen würde eine Stelle erst, wenn mehr als die Hälfte falsch liegt, also ab '+(Math.floor(half)+1)+' von '+n+' Geräten'+
+        (n%2?'. ':' (bei genau '+half+' gilt die Gleichstand-Regel aus Punkt 2). ');
+      s+=m.cons?m.cons+(m.cons===1?' Stelle ist':' Stellen sind')+' gekippt; im Mehrheitsbild sind sie rot.':'Keine Stelle ist gekippt, also ist das Mehrheitsbild der Pilz.';
+      cl.textContent=s;}
+    const hm=$('dHeat');if(!hm.children.length)for(let k=0;k<64;k++)hm.appendChild(document.createElement('span'));
+    for(let k=0;k<64;k++){const f=n?wrong[k]/n:0,q=Math.min(1,f/0.5),c=hm.children[k];
+      c.style.background='rgb('+[26+(239-26)*q,35+(68-35)*q,51+(68-51)*q].map(Math.round).join(',')+')';
+      c.style.color=q>0.5?'#fff':'#93a4bd';c.textContent=Math.round(f*100);c.className=SP.ORIG[k]?'on':'';}}
+  function openDlg(i){dlgI=i;fillDlg(i);if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+    dlg.scrollTop=0;$('dTitle').focus({preventScroll:true});}   // oben anfangen, nicht beim Schließen-Knopf
+  function closeDlg(){dlgI=null;if(typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open');}
+  document.querySelectorAll('.ib').forEach(b=>{b.onclick=()=>openDlg(+b.dataset.i);});
+  $('dClose').onclick=closeDlg;
+  dlg.addEventListener('click',e=>{if(e.target===dlg)closeDlg();});   // Klick neben das Fenster schließt
+  dlg.addEventListener('close',()=>{dlgI=null;});
   sliders();reset();
 })();
 
