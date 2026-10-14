@@ -87,9 +87,62 @@
   .ann li{margin:0 0 5px}
   .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
   .tag.a{background:#2a2410;color:#facc15}.tag.r{background:#0f2f2b;color:var(--tq)}
+  @media(min-width:1180px){
+    .wrap{max-width:1320px}
+    .top2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch}
+    .panels{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .pn .what{min-height:6.2em}
+    .sub{max-width:none}
+    .intro{grid-template-columns:104px 1fr;gap:16px}
+    .bp{width:96px;height:96px}
+    .bpcap{font-size:12px}
+    ol.rd{font-size:13.5px}
+    .cen{margin-top:10px;font-size:13px}
+    .ctl button{padding:7px 11px;font-size:13.5px}
+    .ctl button.pri{min-width:118px}
+    .sl{margin-top:10px}
+    .hint{font-size:12px}
+    .wrap{padding-top:16px}
+    h1{margin-bottom:6px}
+    .mid2,.bot2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;align-items:start}
+    .mid2 h2,.bot2 h2{margin-top:18px}
+    .vs{grid-template-columns:1fr 1fr}
+  }
 </style>
+
+<!--KSNAVCSS--><style>
+.ksnav{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;
+  display:flex;gap:6px;align-items:center;overflow-x:auto;padding:10px 16px;background:#0d1320;border-bottom:1px solid #1e293b;white-space:nowrap;scrollbar-width:none}
+.ksnav::-webkit-scrollbar{display:none}
+.ksnav a{text-decoration:none}
+.ksnav .ks-brand{font-weight:800;font-size:13px;color:#e5edf7;margin-right:4px;letter-spacing:.02em}
+.ksnav .ks-brand small{display:none}
+.ksnav .ks-grp,.ksnav .ks-ext,.ksnav .ks-long{display:none}
+.ksnav a.ks-i{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 6px;border-radius:999px;border:1px solid #24324d;background:#111726;color:#cdd9ea;font-size:13px;flex:none}
+.ksnav a.ks-i b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#16213a;color:#60a5fa;font-size:12px;font-weight:800}
+.ksnav a.ks-i.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.ksnav a.ks-i.on b{background:rgba(255,255,255,.18);color:#fff}
+@media(min-width:1180px){
+  body{padding-left:226px}
+  .ksnav{position:fixed;z-index:50;left:0;top:0;bottom:0;width:210px;flex-direction:column;align-items:stretch;gap:2px;padding:20px 12px;
+    border-bottom:0;border-right:1px solid #1e293b;overflow-y:auto;white-space:normal}
+  .ksnav .ks-brand{font-size:15px;margin:0 6px 14px}
+  .ksnav .ks-brand small{display:block;font-weight:500;font-size:12px;color:#93a4bd;letter-spacing:0;margin-top:2px}
+  .ksnav .ks-grp{display:block;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:14px 8px 4px}
+  .ksnav .ks-short{display:none}.ksnav .ks-long{display:inline}
+  .ksnav a.ks-i{border:0;background:transparent;border-radius:9px;padding:6px 8px;font-size:13.5px}
+  .ksnav a.ks-i:hover{background:#16213a}
+  .ksnav a.ks-i.on{background:#1d4ed8}
+  .ksnav .ks-ext{display:block;margin-top:auto;padding-top:16px;border-top:1px solid #1e293b;font-size:12.5px}
+  .ksnav .ks-ext a{display:block;color:#93a4bd;padding:3px 8px}
+  .ksnav .ks-ext a:hover{color:#e5edf7}
+  .wrap > a[href="index.html"]:first-child{display:none !important}   /* „← Alle Labore“: die Leiste ersetzt ihn */
+}
+</style><!--/KSNAVCSS-->
 </head>
 <body>
+<!--KSNAV--><nav class="ksnav" aria-label="Labore"><span class="ks-brand">KI-Sporen<small>Nachbau der Video-Labore</small></span><a class="ks-i" href="index.html"><b>⌂</b><span class="ks-short">Übersicht</span><span class="ks-long">Übersicht</span></a><span class="ks-grp">Video-Labore</span><a class="ks-i" href="nachbau_1_loop_labor.html"><b>1</b><span class="ks-short">Labor 1</span><span class="ks-long">Loop-Labor · mit Ziel</span></a><a class="ks-i" href="nachbau_2_ohne_ziel.html"><b>2</b><span class="ks-short">Labor 2</span><span class="ks-long">Ohne Ziel</span></a><a class="ks-i" href="nachbau_4_gedaechtnis.html"><b>4</b><span class="ks-short">Labor 4</span><span class="ks-long">Gedächtnis</span></a><span class="ks-grp">Gegenprobe</span><a class="ks-i on" aria-current="page" href="sporen_labor.html"><b>S</b><span class="ks-short">Sporen</span><span class="ks-long">Sporen-Labor</span></a><span class="ks-grp">Zum Artikel</span><a class="ks-i" href="ausbreitungs_labor_sir.html"><b>A</b><span class="ks-short">Ausbreitung</span><span class="ks-long">Ausbreitung (SEIQ)</span></a><a class="ks-i" href="netzwerk_labor_cluster.html"><b>B</b><span class="ks-short">Netzwerk</span><span class="ks-long">Netzwerk-Cluster</span></a><div class="ks-ext"><a href="https://youtu.be/M7zLg-YNcyU" target="_blank" rel="noopener">Video auf YouTube ↗</a><a href="https://www.anthropic.com/research/self-replicating-ai" target="_blank" rel="noopener">Anthropic-Artikel ↗</a></div></nav><!--/KSNAV-->
+
 <div class="wrap">
   <a class="back" href="index.html">← Alle Labore</a>
   <p class="kicker">Eigene Gegenprobe · nicht im Video</p>
@@ -99,6 +152,7 @@
   Hier wird das getestet: Ein Bauplan kopiert sich mit Kopierfehlern von Gerät zu Gerät, und vier Strategien versuchen,
   ihn intakt zu halten. Zwei davon sind die Loops aus dem Video.</p>
 
+  <div class="top2">
   <div class="card intro">
     <div><canvas class="bp" id="bp" width="8" height="8" role="img" aria-label="Bauplan der Spore: ein Pilz aus 8 mal 8 Bit"></canvas>
       <p class="bpcap">Der Bauplan: 8 × 8 = 64 Bit. Rot heißt später: falsch kopiertes Bit.</p></div>
@@ -132,9 +186,11 @@
       eine Zentrale benutzen, die alle Geräte sieht. Das widerspricht der Sporen-Idee, denn dann gibt es einen Punkt zum Abschalten.
       Startet neu.</span></label>
   </div>
+  </div>
 
   <div class="panels" id="panels"></div>
 
+  <div class="mid2"><div>
   <div class="card">
     <div class="lg" id="lg"></div>
     <div class="chart" id="chart">
@@ -144,6 +200,7 @@
     <p class="hint">Anteil der befallenen Geräte, deren Bauplan exakt dem Original entspricht. ⚡ markiert eine Störung. Liegen Linien übereinander, sieht man sie als ineinanderliegende Bänder; antippen zeigt alle Werte.</p>
   </div>
 
+  </div><div>
   <h2>Versuche</h2>
   <div class="card">
     <div class="vs">
@@ -154,7 +211,9 @@
     </div>
     <div class="verdict" id="verdict">Tipp auf einen Versuch. Er stellt die Regler ein, läuft durch und erklärt das Ergebnis.</div>
   </div>
+  </div></div>
 
+  <div class="bot2"><div>
   <h2>Was das zeigt</h2>
   <div class="card">
     <ul class="kl">
@@ -174,6 +233,7 @@
     </ul>
   </div>
 
+  </div><div>
   <h2>Annahmen</h2>
   <div class="card ann"><ul>
     <li><span class="tag a">angenommen</span>Gitter aus 12 × 12 = 144 Geräten, jedes mit bis zu 4 Nachbarn. Start: ein Gerät in der Mitte.</li>
@@ -186,6 +246,7 @@
     <li><span class="tag r">Standard</span>Prüfsumme FNV-1a, 32 Bit: Ein zufälliger Fehler bleibt nur mit Wahrscheinlichkeit von etwa
       1 : 4 Milliarden unentdeckt. Gegen absichtliche Fälschung hilft sie nicht, dafür bräuchte es eine Signatur.</li>
   </ul></div>
+  </div></div>
 </div>
 <dialog id="dlg" aria-labelledby="dTitle">
   <h3 id="dTitle" tabindex="-1" autofocus style="outline:none">Mehrheitsbild: was heißt das?</h3>

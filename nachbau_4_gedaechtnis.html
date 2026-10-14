@@ -67,8 +67,44 @@
     table.rt td[data-label]:not(:first-child)::before{content:attr(data-label) ": ";color:var(--mut);font-weight:600}
   }
 </style>
+
+
+
+<!--KSNAVCSS--><style>
+.ksnav{font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;
+  display:flex;gap:6px;align-items:center;overflow-x:auto;padding:10px 16px;background:#0d1320;border-bottom:1px solid #1e293b;white-space:nowrap;scrollbar-width:none}
+.ksnav::-webkit-scrollbar{display:none}
+.ksnav a{text-decoration:none}
+.ksnav .ks-brand{font-weight:800;font-size:13px;color:#e5edf7;margin-right:4px;letter-spacing:.02em}
+.ksnav .ks-brand small{display:none}
+.ksnav .ks-grp,.ksnav .ks-ext,.ksnav .ks-long{display:none}
+.ksnav a.ks-i{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 6px;border-radius:999px;border:1px solid #24324d;background:#111726;color:#cdd9ea;font-size:13px;flex:none}
+.ksnav a.ks-i b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#16213a;color:#60a5fa;font-size:12px;font-weight:800}
+.ksnav a.ks-i.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+.ksnav a.ks-i.on b{background:rgba(255,255,255,.18);color:#fff}
+@media(min-width:1180px){
+  body{padding-left:226px}
+  .ksnav{position:fixed;z-index:50;left:0;top:0;bottom:0;width:210px;flex-direction:column;align-items:stretch;gap:2px;padding:20px 12px;
+    border-bottom:0;border-right:1px solid #1e293b;overflow-y:auto;white-space:normal}
+  .ksnav .ks-brand{font-size:15px;margin:0 6px 14px}
+  .ksnav .ks-brand small{display:block;font-weight:500;font-size:12px;color:#93a4bd;letter-spacing:0;margin-top:2px}
+  .ksnav .ks-grp{display:block;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:14px 8px 4px}
+  .ksnav .ks-short{display:none}.ksnav .ks-long{display:inline}
+  .ksnav a.ks-i{border:0;background:transparent;border-radius:9px;padding:6px 8px;font-size:13.5px}
+  .ksnav a.ks-i:hover{background:#16213a}
+  .ksnav a.ks-i.on{background:#1d4ed8}
+  .ksnav .ks-ext{display:block;margin-top:auto;padding-top:16px;border-top:1px solid #1e293b;font-size:12.5px}
+  .ksnav .ks-ext a{display:block;color:#93a4bd;padding:3px 8px}
+  .ksnav .ks-ext a:hover{color:#e5edf7}
+  .wrap > a[href="index.html"]:first-child{display:none !important}   /* „← Alle Labore“: die Leiste ersetzt ihn */
+}
+</style><!--/KSNAVCSS-->
 </head>
 <body>
+<!--KSNAV--><nav class="ksnav" aria-label="Labore"><span class="ks-brand">KI-Sporen<small>Nachbau der Video-Labore</small></span><a class="ks-i" href="index.html"><b>⌂</b><span class="ks-short">Übersicht</span><span class="ks-long">Übersicht</span></a><span class="ks-grp">Video-Labore</span><a class="ks-i" href="nachbau_1_loop_labor.html"><b>1</b><span class="ks-short">Labor 1</span><span class="ks-long">Loop-Labor · mit Ziel</span></a><a class="ks-i" href="nachbau_2_ohne_ziel.html"><b>2</b><span class="ks-short">Labor 2</span><span class="ks-long">Ohne Ziel</span></a><a class="ks-i on" aria-current="page" href="nachbau_4_gedaechtnis.html"><b>4</b><span class="ks-short">Labor 4</span><span class="ks-long">Gedächtnis</span></a><span class="ks-grp">Gegenprobe</span><a class="ks-i" href="sporen_labor.html"><b>S</b><span class="ks-short">Sporen</span><span class="ks-long">Sporen-Labor</span></a><span class="ks-grp">Zum Artikel</span><a class="ks-i" href="ausbreitungs_labor_sir.html"><b>A</b><span class="ks-short">Ausbreitung</span><span class="ks-long">Ausbreitung (SEIQ)</span></a><a class="ks-i" href="netzwerk_labor_cluster.html"><b>B</b><span class="ks-short">Netzwerk</span><span class="ks-long">Netzwerk-Cluster</span></a><div class="ks-ext"><a href="https://youtu.be/M7zLg-YNcyU" target="_blank" rel="noopener">Video auf YouTube ↗</a><a href="https://www.anthropic.com/research/self-replicating-ai" target="_blank" rel="noopener">Anthropic-Artikel ↗</a></div></nav><!--/KSNAV-->
+
+
+
 <div class="wrap">
   <a href="index.html" style="display:inline-block;margin-bottom:14px;color:#93a4bd;text-decoration:none;font-size:13px;font-weight:600">← Alle Labore</a>
   <p class="kicker">Nachbau · im Video ab 6:27 · Generation 0 und 630 wie im Video</p>

@@ -31,6 +31,11 @@
 | `ausbreitungs_labor_sir.html` | eigene Erweiterung zum Artikel: SEIQ-Modell (Mean-Field) |
 | `netzwerk_labor_cluster.html` | eigene Erweiterung zum Artikel: SEIQ auf geclustertem Graphen |
 
+Alle Seiten tragen dieselbe Navigationsleiste (breit: links fest, schmal: Knopfzeile oben), eingefügt zwischen
+`<!--KSNAV-->`-Markern von `tools/leiste.py`. Nach dem Neubauen einer Seite oder einer neuen Seite:
+`python3 tools/leiste.py .` (idempotent; neue Seiten in `ITEMS` eintragen). Breite Bildschirme (ab 1180 px):
+Startseite mit Diagramm und Animation nebeneinander und Laborübersicht in 3 Spalten, Sporen-Labor mit 4 Feldern in einer Reihe.
+
 Video-Labor 3 kommt im Video nicht vor (geprüft mit Standbildern alle 5 s und dem Transkript).
 
 Zeitleiste des Videos (aus den Storyboard-Standbildern, `sb0` in der yt-dlp-Info-JSON): 0:00 Artikel ·
