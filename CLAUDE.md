@@ -36,6 +36,10 @@ Alle Seiten tragen dieselbe Navigationsleiste (breit: links fest, schmal: Knopfz
 `python3 tools/leiste.py .` (idempotent; neue Seiten in `ITEMS` eintragen). Breite Bildschirme (ab 1180 px):
 Startseite mit Diagramm und Animation nebeneinander und Laborübersicht in 3 Spalten, Sporen-Labor mit 4 Feldern in einer Reihe.
 
+Zum Weitergeben ohne ZIP: `python3 tools/einzeldatei.py . <Ziel.html>` packt alle 7 Seiten in eine HTML-Datei
+(Seiten im Klartext in `<script type="text/plain">`-Blöcken, Anzeige je Seite in einem iframe, Wechsel über die Leiste und
+die Zurück-Taste). Die Ausgabe nicht committen.
+
 Video-Labor 3 kommt im Video nicht vor (geprüft mit Standbildern alle 5 s und dem Transkript).
 
 Zeitleiste des Videos (aus den Storyboard-Standbildern, `sb0` in der yt-dlp-Info-JSON): 0:00 Artikel ·
